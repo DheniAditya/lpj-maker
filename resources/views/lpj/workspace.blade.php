@@ -441,8 +441,8 @@
                         <input type="hidden" name="amount" id="edit_amount_real">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Ganti Nota (Opsional)</label>
-                        <input type="file" name="receipt_image" class="w-full border border-slate-200 rounded-xl p-2 text-sm text-slate-500">
+                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Ganti Nota (Hanya menerima file gambar)</label>
+                        <input type="file" name="receipt_image" class="w-full border border-slate-200 rounded-xl p-2 text-sm text-slate-500" accept="image/png, image/jpeg, image/jpg, image/webp">
                     </div>
                 </div>
 
@@ -493,9 +493,9 @@
         //     editModal.classList.remove('hidden');
         // }
 
-        // function closeEditModal() {
-        //     editModal.classList.add('hidden');
-        // }
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+        }
         // 1. Fungsi Format Rupiah yang Bersih
 function formatRupiah(numberString) {
     if (!numberString) return "";
