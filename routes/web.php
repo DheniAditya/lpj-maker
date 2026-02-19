@@ -10,6 +10,7 @@ Route::get('/', [LpjController::class, 'create'])->name('lpj.create');
 Route::post('/lpj/store', [LpjController::class, 'storeReport'])->name('lpj.store');
 
 Route::get('/lpj/{report:slug}', [LpjController::class, 'show'])->name('lpj.show');
+Route::put('/lpj/{report:slug}/update-title', [LpjController::class, 'updateTitle'])->name('lpj.update-title');
 Route::post('/lpj/{report:slug}/add', [LpjController::class, 'storeEntry'])->name('lpj.entry.store'); 
 Route::get('/lpj/{report:slug}/download', [LpjController::class, 'downloadPdf'])->name('lpj.download');
 Route::patch('/lpj/entry/{entry}', [LpjController::class, 'updateEntry'])->name('lpj.entry.update');

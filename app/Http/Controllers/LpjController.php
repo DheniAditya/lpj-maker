@@ -309,4 +309,19 @@ private function compressImageToDataUrl($sourcePath)
             'message' => 'Laporan berhasil dihapus.'
         ]);
     }
+
+    public function updateTitle(Request $request, Report $report)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+    ]);
+
+    $report->update([
+        'title' => $request->title,
+        // Jika Anda ingin slug-nya juga berubah otomatis:
+        // 'slug' => Str::slug($request->title) . '-' . Str::random(5),
+    ]);
+
+    return back()->with('success', 'Judul LPJ berhasil diperbarui!');
+}
 }
