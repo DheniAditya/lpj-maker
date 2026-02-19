@@ -10,7 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-
+use App\Models\Report;
 
 class LpjController extends Controller
 {
@@ -310,18 +310,46 @@ private function compressImageToDataUrl($sourcePath)
         ]);
     }
 
-    public function updateTitle(Request $request, Report $report)
+
+    public function updateTitle(Request $request, ExpenseReport $report)
 {
     $request->validate([
         'title' => 'required|string|max:255',
     ]);
 
+    $formattedTitle = \Str::title($request->title);
+
     $report->update([
-        'title' => $request->title,
-        // Jika Anda ingin slug-nya juga berubah otomatis:
-        // 'slug' => Str::slug($request->title) . '-' . Str::random(5),
+        'title' => $formattedTitle,
     ]);
 
-    return back()->with('success', 'Judul LPJ berhasil diperbarui!');
+    // Kirim respon JSON untuk ditangkap jQuery
+    return response()->json([
+        'success' => true,
+        'message' => 'Judul LPJ berhasil diperbarui!',
+        'new_title' => $formattedTitle
+    ]);
 }
+
+public function updateCreator(Request $request, ExpenseReport $report)
+{
+    $request->validate([
+        'creator_name' => 'required|string|max:255',
+    ]);
+
+    // Format otomatis (Huruf Besar di Awal Kata)
+    $formattedName = \Str::title($request->creator_name);
+
+    $report->update([
+        'creator_name' => $formattedName,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Nama diperbarui!',
+        'new_name' => $formattedName
+    ]);
 }
+
+}
+

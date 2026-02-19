@@ -39,12 +39,78 @@
         {{-- HEADER INFO --}}
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 text-blue-700 tracking-wider">Dibuat oleh:</span>
-                    <span class="text-xm text-slate-800 ">{{ $report->creator_name }}</span>
-                </div>
-                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">{{ $report->title }}</h2>
+                <div class="mb-6">
+    {{-- Tampilan Nama Penanggungjawab (Mode Display) --}}
+    <div class="flex items-center gap-3 group" id="creator-display-container">
+        <span class="shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 text-blue-700 tracking-wider">
+            Dibuat oleh:
+        </span>
+
+        <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-slate-800" id="current-creator-name">
+                {{ $report->creator_name }}
+            </span>
+            
+            <button onclick="showEditCreator()" class="p-2 hover:bg-slate-100 rounded-full text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+    </button>
+        </div>
+    </div>
+
+    {{-- Form Edit Nama (Mode Input - Hidden) --}}
+    <form id="form-edit-creator" action="{{ route('lpj.update-creator', $report->slug) }}" method="POST" class="hidden">
+        @csrf
+        @method('PUT')
+        <div class="flex flex-wrap items-center gap-2">
+            <div class="relative flex-1 max-w-[250px]">
+                <input type="text" name="creator_name" id="input-creator" value="{{ $report->creator_name }}" 
+                    class="w-full rounded-lg border-slate-300 focus:ring-blue-500 focus:border-blue-500 text-sm py-1.5 shadow-sm px-3">
+            </div>
+            
+            <div class="flex items-center gap-1">
+                <button type="submit" id="btn-save-creator" 
+                    class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 transition flex items-center gap-2 shadow-sm">
+                    <span id="creator-btn-text">Simpan</span>
+                    <div id="creator-btn-loading" class="hidden animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full"></div>
+                </button>
                 
+                <button type="button" onclick="hideEditCreator()" 
+                    class="bg-white text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+                <!-- <h2 class="text-2xl font-bold text-slate-800 tracking-tight">{{ $report->title }}</h2> -->
+    <div class="flex items-center gap-3 mb-6" id="title-display-container">
+    <h1 class="text-2xl font-bold text-slate-800" id="current-lpj-title">
+        {{ $report->title }}
+    </h1>
+    <button onclick="showEditForm()" class="p-2 hover:bg-slate-100 rounded-full text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+    </button>
+</div>
+
+{{-- Form Edit Tanpa Reload --}}
+<form id="form-edit-title" action="{{ route('lpj.update-title', $report->slug) }}" method="POST" class="hidden mb-6">
+    @csrf
+    @method('PUT')
+    <div class="flex flex-col sm:flex-row gap-2">
+        <input type="text" name="title" id="input-title" value="{{ $report->title }}" 
+            class="rounded-xl border-slate-300 focus:ring-slate-500 focus:border-slate-500 flex-1 shadow-sm">
+        <div class="flex gap-2">
+            <button type="submit" id="btn-save-title" class="bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-700 transition flex-1 sm:flex-none flex items-center justify-center gap-2">
+                <span id="title-btn-text">Simpan</span>
+                <div id="title-btn-loading" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+            </button>
+            <button type="button" onclick="hideEditForm()" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-300 transition">
+                Batal
+            </button>
+        </div>
+    </div>
+</form>
                 <div class="flex items-center gap-4 mt-2 text-sm">
                     <div class="px-3 py-1 rounded-lg bg-slate-50 border border-slate-100">
                         <span class="text-slate-400 text-xs uppercase font-bold mr-1">Sisa:</span>
@@ -265,7 +331,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </a>
             @else
-                <span class="text-slate-300">-</span>
+                <span class="text-red-300 text-sm ">Nota Belum Anda Input</span>
             @endif
         </td>
 
@@ -281,15 +347,18 @@
             <div class="flex items-center justify-center gap-2">
                 {{-- Tombol Edit (Tetap seperti semula) --}}
                 <button onclick="openEditModal(this)" 
-                        data-id="{{ $entry->id }}"
-                        data-type="{{ $entry->type }}"
-                        data-description="{{ $entry->description }}"
-                        data-amount="{{ $entry->amount }}"
-                        data-date="{{ $entry->created_at->format('Y-m-d') }}" 
-                        data-action-url="{{ route('lpj.entry.update', $entry->id) }}"
-                        class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                </button>
+    data-id="{{ $entry->id }}"
+    data-type="{{ $entry->type }}"
+    data-description="{{ $entry->description }}"
+    data-amount="{{ $entry->amount }}" {{-- Angka mentah dari DB --}}
+    data-date="{{ $entry->created_at->format('Y-m-d') }}" {{-- Wajib Y-m-d --}}
+    data-action-url="{{ route('lpj.entry.update', $entry->id) }}"
+    class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition">
+    
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+    </svg>
+</button>
                 
                 {{-- PERUBAHAN 2: Tombol Hapus Baru (Tanpa Form) --}}
                 <button type="button" 
@@ -384,49 +453,105 @@
 
     {{-- SCRIPT --}}
     <script>
-        const displayInput = document.getElementById('amount_display');
-        const realInput = document.getElementById('amount_real');
-        const editDisplayInput = document.getElementById('edit_amount_display');
-        const editRealInput = document.getElementById('edit_amount_real');
+        // const displayInput = document.getElementById('amount_display');
+        // const realInput = document.getElementById('amount_real');
+        // const editDisplayInput = document.getElementById('edit_amount_display');
+        // const editRealInput = document.getElementById('edit_amount_real');
 
-        function formatRupiah(numberString) {
-            let clean = numberString.replace(/[^\d]/g, '');
-            return clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
+        // function formatRupiah(numberString) {
+        //     let clean = numberString.replace(/[^\d]/g, '');
+        //     return clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        // }
 
-        function setupCurrencyInput(display, real) {
-            display.addEventListener('input', (e) => {
-                let val = e.target.value;
-                let clean = val.replace(/[^\d]/g, '');
-                real.value = clean;
-                e.target.value = formatRupiah(val);
-            });
-        }
+        // function setupCurrencyInput(display, real) {
+        //     display.addEventListener('input', (e) => {
+        //         let val = e.target.value;
+        //         let clean = val.replace(/[^\d]/g, '');
+        //         real.value = clean;
+        //         e.target.value = formatRupiah(val);
+        //     });
+        // }
 
-        setupCurrencyInput(displayInput, realInput);
-        setupCurrencyInput(editDisplayInput, editRealInput);
+        // setupCurrencyInput(displayInput, realInput);
+        // setupCurrencyInput(editDisplayInput, editRealInput);
 
-        const editModal = document.getElementById('editModal');
-        const editForm = document.getElementById('editModalForm');
+        // const editModal = document.getElementById('editModal');
+        // const editForm = document.getElementById('editModalForm');
         
-        function openEditModal(btn) {
-            editForm.action = btn.dataset.actionUrl;
-            document.getElementById('edit_description').value = btn.dataset.description;
-            document.getElementById('edit_created_at').value = btn.dataset.date;
-            editDisplayInput.value = formatRupiah(btn.dataset.amount);
-            editRealInput.value = btn.dataset.amount;
+        // function openEditModal(btn) {
+        //     editForm.action = btn.dataset.actionUrl;
+        //     document.getElementById('edit_description').value = btn.dataset.description;
+        //     document.getElementById('edit_created_at').value = btn.dataset.date;
+        //     editDisplayInput.value = formatRupiah(btn.dataset.amount);
+        //     editRealInput.value = btn.dataset.amount;
 
-            if (btn.dataset.type === 'debit') {
-                document.getElementById('edit_debit').checked = true;
-            } else {
-                document.getElementById('edit_credit').checked = true;
-            }
-            editModal.classList.remove('hidden');
-        }
+        //     if (btn.dataset.type === 'debit') {
+        //         document.getElementById('edit_debit').checked = true;
+        //     } else {
+        //         document.getElementById('edit_credit').checked = true;
+        //     }
+        //     editModal.classList.remove('hidden');
+        // }
 
-        function closeEditModal() {
-            editModal.classList.add('hidden');
-        }
+        // function closeEditModal() {
+        //     editModal.classList.add('hidden');
+        // }
+        // 1. Fungsi Format Rupiah yang Bersih
+function formatRupiah(numberString) {
+    if (!numberString) return "";
+    // Pastikan jadi string dan ambil hanya angka
+    let clean = numberString.toString().replace(/[^\d]/g, '');
+    // Berikan titik ribuan
+    return clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+// 2. Setup Input agar Real-time Sinkron
+function setupCurrencyInput(display, real) {
+    if (!display || !real) return;
+    
+    display.addEventListener('input', (e) => {
+        let val = e.target.value;
+        let clean = val.replace(/[^\d]/g, '');
+        
+        // Simpan angka murni ke input hidden untuk database
+        real.value = clean;
+        
+        // Tampilkan angka berformat titik ke user
+        e.target.value = formatRupiah(clean);
+    });
+}
+
+// Jalankan setup untuk form tambah dan form edit
+setupCurrencyInput(document.getElementById('amount_display'), document.getElementById('amount_real'));
+setupCurrencyInput(document.getElementById('edit_amount_display'), document.getElementById('edit_amount_real'));
+
+// 3. Fungsi Buka Modal (Kunci Perbaikan ada di sini)
+function openEditModal(btn) {
+    const editForm = document.getElementById('editModalForm');
+    const editDisplayInput = document.getElementById('edit_amount_display');
+    const editRealInput = document.getElementById('edit_amount_real');
+
+    editForm.action = btn.dataset.actionUrl;
+    document.getElementById('edit_description').value = btn.dataset.description;
+    document.getElementById('edit_created_at').value = btn.dataset.date;
+
+    // --- PERBAIKAN: Buang angka desimal database (.00 atau .000) ---
+    let rawAmount = btn.dataset.amount.toString();
+    let cleanAmount = rawAmount.split('.')[0]; // Mengambil angka sebelum titik
+
+    // Masukkan ke input
+    editDisplayInput.value = formatRupiah(cleanAmount);
+    editRealInput.value = cleanAmount;
+
+    // Set Radio Button
+    if (btn.dataset.type === 'debit') {
+        document.getElementById('edit_debit').checked = true;
+    } else {
+        document.getElementById('edit_credit').checked = true;
+    }
+
+    document.getElementById('editModal').classList.remove('hidden');
+}
     </script>
 </x-app-layout>
 <script>
@@ -461,7 +586,7 @@ $(document).ready(function() {
                     icon: 'success',
                     title: 'Berhasil!',
                     text: response.message,
-                    timer: 2000,
+                    timer: 600,
                     showConfirmButton: false
                 });
 
@@ -532,7 +657,7 @@ $(document).ready(function() {
                             icon: 'success',
                             title: 'Terhapus!',
                             text: response.message, // Pesan dari Controller
-                            timer: 1500,
+                            timer: 600,
                             showConfirmButton: false
                         });
 
@@ -586,5 +711,128 @@ function stopDownloadAnimation(btn, icon, spinner, text) {
     icon.classList.remove('hidden');
     spinner.classList.add('hidden');
     text.innerText = 'Download PDF';
+}
+
+$(document).ready(function() {
+    // Handle Edit Judul LPJ via AJAX
+    $('#form-edit-title').on('submit', function(e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let btn = $('#btn-save-title');
+        let btnText = $('#title-btn-text');
+        let btnLoading = $('#title-btn-loading');
+        let newTitle = $('#input-title').val();
+
+        // Loading State
+        btn.prop('disabled', true);
+        btnText.text('Menyimpan...');
+        btnLoading.removeClass('hidden');
+
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                // 1. Notifikasi Sukses
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: response.message,
+                    timer: 600,
+                    showConfirmButton: false
+                });
+
+                // 2. Update Teks Judul di UI secara Real-time
+                $('#current-lpj-title').text(response.new_title);
+                
+                // 3. Kembalikan Tampilan
+                hideEditForm();
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.message || 'Gagal mengubah judul.';
+                Swal.fire('Gagal!', errorMessage, 'error');
+            },
+            complete: function() {
+                // Kembalikan Tombol
+                btn.prop('disabled', false);
+                btnText.text('Simpan');
+                btnLoading.addClass('hidden');
+            }
+        });
+    });
+});
+
+// Fungsi Toggle Tampilan
+function showEditForm() {
+    $('#title-display-container').addClass('hidden');
+    $('#form-edit-title').removeClass('hidden');
+    $('#input-title').focus();
+}
+
+function hideEditForm() {
+    $('#title-display-container').removeClass('hidden');
+    $('#form-edit-title').addClass('hidden');
+}
+
+$(document).ready(function() {
+    // Handle Edit Nama Penanggungjawab
+    $('#form-edit-creator').on('submit', function(e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let btn = $('#btn-save-creator');
+        let btnText = $('#creator-btn-text');
+        let btnLoading = $('#creator-btn-loading');
+
+        btn.prop('disabled', true);
+        btnText.text('...');
+        btnLoading.removeClass('hidden');
+
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                // Notifikasi Toast Kilat
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 800,
+                    timerProgressBar: true
+                });
+
+                Toast.fire({
+                    icon: 'success',
+                    title: response.message
+                });
+
+                // Update UI secara Instan
+                $('#current-creator-name').text(response.new_name);
+                hideEditCreator();
+            },
+            error: function() {
+                Swal.fire('Gagal!', 'Tidak bisa mengubah nama.', 'error');
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+                btnText.text('Simpan');
+                btnLoading.addClass('hidden');
+            }
+        });
+    });
+});
+
+// Fungsi Toggle
+function showEditCreator() {
+    $('#creator-display-container').addClass('hidden');
+    $('#form-edit-creator').removeClass('hidden');
+    $('#input-creator').focus();
+}
+
+function hideEditCreator() {
+    $('#creator-display-container').removeClass('hidden');
+    $('#form-edit-creator').addClass('hidden');
 }
 </script>
