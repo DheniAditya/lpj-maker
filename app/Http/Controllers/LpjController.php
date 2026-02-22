@@ -32,8 +32,8 @@ class LpjController extends Controller
         $formattedName  = Str::title($request->creator_name);
 
         $report = ExpenseReport::create([
-            'title' => $formattedTitle,        // <-- Pakai variabel yang sudah diformat
-            'creator_name' => $formattedName,  // <-- Pakai variabel yang sudah diformat
+            'title' => $formattedTitle,        
+            'creator_name' => $formattedName,  
             'slug' => Str::slug($formattedTitle) . '-' . uniqid(),
             'user_id' => $userId
         ]);
@@ -53,74 +53,57 @@ class LpjController extends Controller
         return view('lpj.workspace', compact('report'));
     }
 
-    public function storeEntry(Request $request, ExpenseReport $report)
-    {
-        $this->checkAccess($report);
+   public function storeEntry(Request $request, ExpenseReport $report)
+{
+    $this->checkAccess($report);
 
-        $validated = $request->validate([
-            'type' => 'required|in:debit,credit',
-            'description' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
-            'receipt_image' => 'nullable|image|mimes:jpg,png,jpeg|max:5120' // maks 5MB
-        ]);
-        
-        $imagePath = null;
-        if ($request->hasFile('receipt_image')) {
-            $imagePath = $request->file('receipt_image')->store('receipts', 'public');
-        }
-
-        $report->entries()->create([
-            'type' => $validated['type'],
-            'description' => $validated['description'],
-            'amount' => $validated['amount'],
-            'receipt_image_path' => $imagePath,
-        ]);
-
-        // return redirect()->back()->with('success', 'Entri berhasil disimpan!');
-        return response()->json([
-        'status' => 'success',
-        'message' => 'Transaksi berhasil disimpan!',
+    $validated = $request->validate([
+        'type' => 'required|in:debit,credit',
+        'description' => 'required|string|max:255',
+        'amount' => 'required|numeric|min:0',
+        'images.*' => 'nullable|image|mimes:jpg,png,jpeg|max:5120' 
     ]);
+
+    
+    $entry = $report->entries()->create([
+        'type' => $validated['type'],
+        'description' => $validated['description'],
+        'amount' => $validated['amount'],
+    ]);
+
+    
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $file) {
+            $path = $file->store('receipts', 'public');
+            $entry->images()->create([
+                'image_path' => $path
+            ]);
+        }
     }
 
+    return response()->json(['status' => 'success', 'message' => 'Berhasil!']);
+}
 
 public function downloadPdf(ExpenseReport $report)
 {
     $this->checkAccess($report);
-
-    // 1. Setting Wajib untuk PDF Gambar
     ini_set('memory_limit', '512M');
-    ini_set('max_execution_time', 300);
 
     try {
-        $report->load('entries');
+        
+        $report->load('entries.images');
 
         $receiptImages = [];
-        
         foreach ($report->entries as $entry) {
-            if ($entry->receipt_image_path) {
-                
-                // --- PERBAIKAN UTAMA: PATH GAMBAR ---
-                // Jangan pakai public_path('storage/...') karena kadang symlink error.
-                // Pakai storage_path('app/public/...') untuk tembak file aslinya langsung.
-                
-                $realPath = storage_path('app/public/' . $entry->receipt_image_path);
-
-                // Jika di database path-nya sudah ada kata 'public/', sesuaikan:
-                // $realPath = storage_path('app/' . $entry->receipt_image_path);
+            
+            foreach ($entry->images as $image) {
+                $realPath = storage_path('app/public/' . $image->image_path);
 
                 if (file_exists($realPath)) {
                     
-                    // Ambil ekstensi file (jpg/png)
-                    $type = pathinfo($realPath, PATHINFO_EXTENSION);
-                    
-                    // Baca file mentah
-                    $data = file_get_contents($realPath);
-                    
-                    if ($data !== false) {
-                        // Encode ke Base64
-                        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                    $base64 = $this->compressImageToDataUrl($realPath);
 
+                    if ($base64) {
                         $receiptImages[] = [
                             'image_src' => $base64,
                             'description' => $entry->description,
@@ -128,44 +111,36 @@ public function downloadPdf(ExpenseReport $report)
                             'type' => $entry->type,
                         ];
                     }
-                } else {
-                    // Debugging: Cek Log jika file tidak ketemu
-                    // \Log::error("File tidak ditemukan di path: " . $realPath);
                 }
             }
         }
 
         $groupedReceipts = collect($receiptImages)->chunk(4);
-
         $pdf = Pdf::loadView('lpj.pdf_template', compact('report', 'groupedReceipts'));
         $pdf->setPaper('a4', 'portrait');
 
-        $filename = "LPJ - {$report->title}.pdf";
-
-        // --- PERBAIKAN PRILAKU DOWNLOAD ---
-        // Gunakan download(), bukan stream() atau view()
-        return $pdf->download($filename);
+        return $pdf->download("LPJ - {$report->title}.pdf");
 
     } catch (\Throwable $e) {
         return redirect()->back()->with('error', 'Gagal generate PDF: ' . $e->getMessage());
     }
 }
 
-// --- FUNGSI TAMBAHAN (Letakkan di bawah fungsi downloadPdf, di dalam Class yang sama) ---
+
 private function compressImageToDataUrl($sourcePath)
 {
     try {
-        // 1. Ambil Info Gambar
+        
         list($width, $height, $type) = getimagesize($sourcePath);
         
-        // 2. Load Gambar ke Memory berdasarkan tipe
+        
         switch ($type) {
             case IMAGETYPE_JPEG:
                 $image = imagecreatefromjpeg($sourcePath);
                 break;
             case IMAGETYPE_PNG:
                 $image = imagecreatefrompng($sourcePath);
-                // Handle transparansi PNG (ubah jadi putih)
+                
                 $bg = imagecreatetruecolor($width, $height);
                 imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
                 imagecopy($bg, $image, 0, 0, 0, 0, $width, $height);
@@ -179,28 +154,28 @@ private function compressImageToDataUrl($sourcePath)
                 return null;
         }
 
-        // 3. Resize jika terlalu besar (Max lebar 800px sudah cukup untuk PDF A4)
+        
         $maxWidth = 800;
         if ($width > $maxWidth) {
             $newWidth = $maxWidth;
             $newHeight = ($height / $width) * $newWidth;
             $imageResized = imagescale($image, $newWidth, $newHeight);
-            imagedestroy($image); // Hapus yang besar dari memory
+            imagedestroy($image); 
             $image = $imageResized;
         }
 
-        // 4. Output ke Buffer sebagai JPG Kualitas 60% (Cukup jelas tapi ringan)
+        
         ob_start();
         imagejpeg($image, null, 60); 
         $data = ob_get_clean();
-        imagedestroy($image); // Bersihkan memory
+        imagedestroy($image); 
 
-        // 5. Jadikan Base64
+        
         return 'data:image/jpeg;base64,' . base64_encode($data);
 
     } catch (\Exception $e) {
         Log::error("Gagal kompres gambar: " . $e->getMessage());
-        return null; // Jika gagal, gambar di-skip agar PDF tetap jalan
+        return null; 
     }
 }
 
@@ -215,7 +190,7 @@ private function compressImageToDataUrl($sourcePath)
             'receipt_image' => 'nullable|image|mimes:jpg,png,jpeg|max:5120'
         ]);
 
-        $imagePath = $entry->receipt_image_path; // Default: path gambar lama
+        $imagePath = $entry->receipt_image_path; 
 
         if ($request->hasFile('receipt_image')) {
             if ($entry->receipt_image_path) {
@@ -237,24 +212,20 @@ private function compressImageToDataUrl($sourcePath)
 
     public function destroyEntry(ExpenseEntry $entry)
 {
-    // 1. Cek Akses (Biarkan tetap ada)
     $this->checkAccess($entry->expenseReport);
 
-    // 2. Hapus Gambar Fisik (Biarkan tetap ada)
-    if ($entry->receipt_image_path) {
-        Storage::disk('public')->delete($entry->receipt_image_path);
+    
+    foreach ($entry->images as $image) {
+        Storage::disk('public')->delete($image->image_path);
     }
 
-    // 3. Hapus Data di Database (Biarkan tetap ada)
+    
+    
     $entry->delete();
 
-    // 4. --- BAGIAN INI YANG DIUBAH ---
-    // Jangan redirect()->back();
-    // Ganti dengan respon JSON agar AJAX tahu sukses:
-    
     return response()->json([
         'status' => 'success',
-        'message' => 'Entri berhasil dihapus.'
+        'message' => 'Entri dan semua nota berhasil dihapus.'
     ]);
 }
 
@@ -274,36 +245,36 @@ private function compressImageToDataUrl($sourcePath)
         }
     }
 
-    //delete history
+    
     public function destroy($id)
     {
-        // 1. Cari Data
-        // Kita pakai ExpenseReport::find karena sudah di-use di atas
+        
+        
         $report = ExpenseReport::find($id); 
 
-        // 2. Jika Data Tidak Ditemukan
+        
         if (!$report) {
-            // Ubah respon redirect menjadi JSON Error 404
+            
             return response()->json([
                 'status' => 'error', 
                 'message' => 'Data laporan tidak ditemukan'
             ], 404);
         }
 
-        // 3. Cek Keamanan (Otorisasi)
-        if (auth()->id() !== $report->user_id) {
-            // Ubah abort menjadi JSON Error 403
+        
+        if (\Illuminate\Support\Facades\Auth::id() !== $report->user_id) {
+            
             return response()->json([
                 'status' => 'error', 
                 'message' => 'Anda tidak berhak menghapus laporan ini.'
             ], 403);
         }
 
-        // 4. Hapus Data
+        
         $report->delete();
 
-        // 5. Berhasil
-        // Ubah redirect menjadi JSON Success
+        
+        
         return response()->json([
             'status' => 'success', 
             'message' => 'Laporan berhasil dihapus.'
@@ -317,13 +288,13 @@ private function compressImageToDataUrl($sourcePath)
         'title' => 'required|string|max:255',
     ]);
 
-    $formattedTitle = \Str::title($request->title);
-
+    
+$formattedTitle = Str::title($request->title); 
     $report->update([
         'title' => $formattedTitle,
     ]);
 
-    // Kirim respon JSON untuk ditangkap jQuery
+    
     return response()->json([
         'success' => true,
         'message' => 'Judul LPJ berhasil diperbarui!',
@@ -337,8 +308,9 @@ public function updateCreator(Request $request, ExpenseReport $report)
         'creator_name' => 'required|string|max:255',
     ]);
 
-    // Format otomatis (Huruf Besar di Awal Kata)
-    $formattedName = \Str::title($request->creator_name);
+    
+    
+    $formattedName = Str::title($request->title); 
 
     $report->update([
         'creator_name' => $formattedName,
