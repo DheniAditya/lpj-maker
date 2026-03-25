@@ -55,7 +55,7 @@ class LpjController extends Controller
 
    public function storeEntry(Request $request, ExpenseReport $report)
 {
-    dd($request->all(), $request->file('images'));
+    // dd($request->all(), $request->file('images'));
     $this->checkAccess($report);
 
     $validated = $request->validate([
