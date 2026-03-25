@@ -1,5 +1,7 @@
-<x-app-layout> {{-- WRAPPER UTAMA --}}
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-8 px-4"> {{-- WARNING MODE TAMU --}}
+<x-app-layout> 
+    {{-- WRAPPER UTAMA --}}
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-8 px-4"> 
+        {{-- WARNING MODE TAMU --}}
         @guest
        <div x-data="{ open: false }" class="mb-6 bg-yellow-50 border border-yellow-200 rounded-xl overflow-hidden shadow-sm">
             <button @click="open = !open" class="w-full flex items-center justify-between p-4 bg-yellow-100 hover:bg-yellow-200 transition-colors text-left text-yellow-800 focus:outline-none">
@@ -14,20 +16,13 @@
                     </div>
                 </div>
 
-                <svg xmlns="http://www.w3.org/2000/svg" 
-                    class="w-5 h-5 transition-transform duration-200" 
-                    :class="open ? 'rotate-180' : ''"
-                    viewBox="0 0 20 20" 
-                    fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform duration-200" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
             </button>
 
             <div x-show="open" 
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 transform -translate-y-2"
-                x-transition:enter-end="opacity-100 transform translate-y-0"
-                class="p-4 border-t border-yellow-200 text-sm text-yellow-800 bg-yellow-50">
+                x-transition:enter="transition ease-out duration-200"                x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" class="p-4 border-t border-yellow-200 text-sm text-yellow-800 bg-yellow-50">
                 <p>Anda berada di mode tamu. Riwayat pekerjaan anda akan terhapus otomatis setelah halaman ini di tutup. Silahkan download LPJ anda sebelum menutup halaman.</p>
                 <div class="mt-3 flex flex-wrap items-center gap-1">
                     <a href="{{ route('register') }}" class="text-blue-600 font-bold underline hover:text-blue-800">Daftar Akun</a>
@@ -37,11 +32,13 @@
                 </div>
             </div>
         </div>
-        @endguest {{-- HEADER INFO --}}
+        @endguest 
+        {{-- HEADER INFO --}}
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <div class="mb-6">
-                    {{-- Tampilan Nama Penanggungjawab (Mode Display) --}}
+                    
+                {{-- Tampilan Nama Penanggungjawab (Mode Display) --}}
                     <div class="flex items-center gap-3 group" id="creator-display-container">
                         <span class="shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 text-blue-700 tracking-wider">
                             Dibuat oleh:
@@ -49,13 +46,15 @@
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-medium text-slate-800" id="current-creator-name">
                                 {{ $report->creator_name }}
-                            </span> <button onclick="showEditCreator()" class="p-2 hover:bg-slate-100 rounded-full text-slate-400">
+                            </span> 
+                            <button onclick="showEditCreator()" class="p-2 hover:bg-slate-100 rounded-full text-slate-400">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                 </svg>
                             </button>
                         </div>
-                    </div> {{-- Form Edit Nama (Mode Input - Hidden) --}}
+                    </div> 
+                    {{-- Form Edit Nama (Mode Input - Hidden) --}}
                     <form id="form-edit-creator" action="{{ route('lpj.update-creator', $report->slug) }}" method="POST" class="hidden">
                         @csrf
                         @method('PUT')
@@ -76,7 +75,7 @@
                             </div>
                         </div>
                     </form>
-                </div> <!-- <h2 class="text-2xl font-bold text-slate-800 tracking-tight">{{ $report->title }}</h2> -->
+                </div> 
                 <div class="flex items-center gap-3 mb-6" id="title-display-container">
                     <h1 class="text-2xl font-bold text-slate-800" id="current-lpj-title">
                         {{ $report->title }}
@@ -86,7 +85,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                         </svg>
                     </button>
-                </div>{{-- Form Edit Tanpa Reload --}}
+                </div>
+                {{-- Form Edit Tanpa Reload --}}
                 <form id="form-edit-title" action="{{ route('lpj.update-title', $report->slug) }}" method="POST" class="hidden mb-6">
                     @csrf
                     @method('PUT')
@@ -112,27 +112,34 @@
                         </span>
                     </div>
                 </div>
-            </div> {{-- Tombol Download PDF --}}
+            </div> 
+            {{-- Tombol Download PDF --}}
             <a href="{{ route('lpj.download', $report->slug) }}"
                 id="downloadBtn"
                 onclick="startDownloadAnimation(this)"
-                class="group bg-slate-800 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center hover:bg-slate-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"> {{-- Ikon Download Asli --}}
+                class="group bg-slate-800 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center hover:bg-slate-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"> 
+                {{-- Ikon Download Asli --}}
                 <svg id="downloadIcon" class="w-5 h-5 mr-2 text-slate-400 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                </svg> {{-- Ikon Loading (Hidden by default) --}}
-                <svg id="loadingSpinner" class="hidden animate-spin h-5 w-5 mr-2 text-white" xmlns="http:
-        <circle class=" opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                </svg> 
+                {{-- Ikon Loading (Hidden by default) --}}
+                <svg id="loadingSpinner" 
+                    class="hidden animate-spin h-5 w-5 mr-2 text-white" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg> <span id="btnText">Download PDF</span>
+                </svg> 
+                <span id="btnText">Download PDF</span>
             </a>
-        </div> {{-- Form & Tabel --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"> {{-- Form Tambah (Sticky) --}}
+        </div> 
+        {{-- Form & Tabel --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"> 
+            {{-- Form Tambah (Sticky) --}}
             <div class="col-span-1 lg:sticky top-8 z-30">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50">
                     <h3 class="text-lg font-bold mb-4 text-slate-700 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
                         Tambah Transaksi
                     </h3> @if(session('success'))
                     <div class="bg-emerald-50 text-emerald-700 p-3 rounded-lg text-sm mb-4 border border-emerald-100 flex items-center">
@@ -143,6 +150,7 @@
                     </div>
                     @endif <form id="form-transaksi" action="{{ route('lpj.entry.store', $report->slug) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                         @csrf
+                        
                         {{-- Pilihan Debit/Kredit --}}
                         <div class="grid grid-cols-2 gap-3 mb-4">
                             <div>
@@ -159,7 +167,8 @@
                                     <span class="text-[10px] opacity-80 uppercase">Keluar</span>
                                 </label>
                             </div>
-                        </div> {{-- Input Form --}}
+                        </div> 
+                        {{-- Input Form --}}
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Keterangan</label>
@@ -258,7 +267,8 @@
                                             </button>
                                         </div>
                                     </template>
-                                </div> {{-- MODAL KAMERA TETAP SAMA --}}
+                                </div> 
+                                {{-- MODAL KAMERA TETAP SAMA --}}
                                 <div x-show="showCamera" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                                     <div class="bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-md">
                                         <div class="relative bg-black h-72 flex items-center justify-center">
@@ -273,7 +283,8 @@
                                 </div>
                             </div>
                         </div> <button type="submit" id="btn-save"
-                            class="flex items-center justify-center w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 transform active:scale-95"> <span id="btn-text">Simpan Transaksi</span> {{-- Container Loading --}}
+                            class="flex items-center justify-center w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 transform active:scale-95"> <span id="btn-text">Simpan Transaksi</span> 
+                            {{-- Container Loading --}}
                             <span id="btn-loading" class="hidden ml-2 flex items-center">
                                 <svg class="animate-spin h-5 w-5 text-white" xmlns="http:
                                     <circle class=" opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -282,7 +293,8 @@
                             </span> </button>
                     </form>
                 </div>
-            </div> {{-- Tabel History --}}
+            </div> 
+            {{-- Tabel History --}}
             <div class="col-span-1 lg:col-span-2">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
@@ -302,6 +314,7 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 @forelse ($report->entries as $entry)
+                                
                                 {{-- PERUBAHAN 1: Tambahkan ID unik di tr --}}
                                 <tr id="entry-{{ $entry->id }}" class="hover:bg-blue-50/50 transition duration-150">
                                     <td class="p-4 text-sm text-slate-600 whitespace-nowrap">{{ $entry->created_at->format('d/m/y') }}</td>
@@ -329,18 +342,22 @@
                                     </td>
                                     <td class="p-4">
                                         <div class="flex items-center justify-center gap-2">
-                                            {{-- Tombol Edit (Tetap seperti semula) --}}
+                                            
+                                        {{-- Tombol Edit (Tetap seperti semula) --}}
                                             <button onclick="openEditModal(this)"
                                                 data-id="{{ $entry->id }}"
                                                 data-type="{{ $entry->type }}"
                                                 data-description="{{ $entry->description }}"
-                                                data-amount="{{ $entry->amount }}" {{-- Angka mentah dari DB --}}
-                                                data-date="{{ $entry->created_at->format('Y-m-d') }}" {{-- Wajib Y-m-d --}}
+                                                data-amount="{{ $entry->amount }}" 
+                                                {{-- Angka mentah dari DB --}}
+                                                data-date="{{ $entry->created_at->format('Y-m-d') }}" 
+                                                {{-- Wajib Y-m-d --}}
                                                 data-action-url="{{ route('lpj.entry.update', $entry->id) }}"
                                                 class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                                 </svg>
-                                            </button> {{-- PERUBAHAN 2: Tombol Hapus Baru (Tanpa Form) --}}
+                                            </button> 
+                                            {{-- PERUBAHAN 2: Tombol Hapus Baru (Tanpa Form) --}}
                                             <button type="button"
                                                 class="btn-delete-entry p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
                                                 data-url="{{ route('lpj.entry.destroy', $entry->id) }}"
@@ -366,7 +383,8 @@
                 </div>
             </div>
         </div>
-    </div> {{-- 4. FLOATING ACTION BUTTON --}}
+    </div> 
+    {{-- 4. FLOATING ACTION BUTTON --}}
     <div class="fixed bottom-6 right-6 z-40">
         @auth
         <a href="{{ route('dashboard') }}" class="bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl hover:bg-slate-700 transition flex items-center gap-2 border border-slate-600">
@@ -383,7 +401,8 @@
             Buat Baru
         </a>
         @endauth
-    </div> {{-- 5. MODAL EDIT --}}
+    </div> 
+    {{-- 5. MODAL EDIT --}}
     <div id="editModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all scale-100">
             <div class="flex justify-between items-center mb-6">
@@ -504,7 +523,8 @@
                 </div> <button type="submit" class="w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition">Simpan Perubahan</button>
             </form>
         </div>
-    </div> {{-- SCRIPT --}}
+    </div> 
+    {{-- SCRIPT --}}
     <script>
         function closeEditModal() {
             editModal.classList.add('hidden');
@@ -580,11 +600,12 @@
                     }, 2000);
                 },
                 error: function(xhr) {
-                    let errors = xhr.responseJSON.errors;
                     let errorMessage = 'Terjadi kesalahan sistem.';
-                    if (errors) {
-                        errorMessage = Object.values(errors)[0][0];
+
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors)[0][0];
                     }
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal',
@@ -632,13 +653,17 @@
                             });
                         },
                         error: function(xhr) {
-                            Swal.fire('Gagal!', 'Terjadi kesalahan sistem.', 'error');
-                        }
+                            console.log(xhr.responseText); // 🔥 Tambahkan ini
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Menyimpan',
+                                text: 'Cek console untuk detail error'
+                            });
+                        },
                     });
                 }
             });
         });
-        yyy
     });
 
     function startDownloadAnimation(btn) {

@@ -55,6 +55,7 @@ class LpjController extends Controller
 
    public function storeEntry(Request $request, ExpenseReport $report)
 {
+    dd($request->all(), $request->file('images'));
     $this->checkAccess($report);
 
     $validated = $request->validate([
@@ -81,7 +82,9 @@ class LpjController extends Controller
         }
     }
 
-    return response()->json(['status' => 'success', 'message' => 'Berhasil!']);
+return response()->json([
+    'message' => 'Transaksi berhasil disimpan'
+]);
 }
 
 public function downloadPdf(ExpenseReport $report)
@@ -144,7 +147,6 @@ private function compressImageToDataUrl($sourcePath)
                 $bg = imagecreatetruecolor($width, $height);
                 imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
                 imagecopy($bg, $image, 0, 0, 0, 0, $width, $height);
-                imagedestroy($image);
                 $image = $bg;
                 break;
             case IMAGETYPE_GIF:
@@ -160,7 +162,6 @@ private function compressImageToDataUrl($sourcePath)
             $newWidth = $maxWidth;
             $newHeight = ($height / $width) * $newWidth;
             $imageResized = imagescale($image, $newWidth, $newHeight);
-            imagedestroy($image); 
             $image = $imageResized;
         }
 
@@ -168,7 +169,6 @@ private function compressImageToDataUrl($sourcePath)
         ob_start();
         imagejpeg($image, null, 60); 
         $data = ob_get_clean();
-        imagedestroy($image); 
 
         
         return 'data:image/jpeg;base64,' . base64_encode($data);
@@ -308,9 +308,7 @@ public function updateCreator(Request $request, ExpenseReport $report)
         'creator_name' => 'required|string|max:255',
     ]);
 
-    
-    
-    $formattedName = Str::title($request->title); 
+    $formattedName = Str::title($request->creator_name); 
 
     $report->update([
         'creator_name' => $formattedName,
@@ -319,7 +317,7 @@ public function updateCreator(Request $request, ExpenseReport $report)
     return response()->json([
         'success' => true,
         'message' => 'Nama diperbarui!',
-        'new_name' => $formattedName
+        'new_name' => $formattedName 
     ]);
 }
 
