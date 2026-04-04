@@ -77,7 +77,7 @@
                     Terlampir ({{ $imageCount }})
                 </span>
             @else
-                <span style="color: #cbd5e1; font-size: 10px;">Tidak Ada</span>
+                <span style="color: #64748b; font-size: 10px;">Tidak Ada</span>
             @endif
         </td>
         <td class="text-right pr-10 {{ $entry->type == 'debit' ? 'debit-text' : '' }}">
