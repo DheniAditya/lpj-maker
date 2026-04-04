@@ -236,7 +236,7 @@
                                     this.images.forEach(img => dt.items.add(img.file));
                                     $refs.fileInput.files = dt.files;
                                 }
-                            }">
+                                }">
                                 <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Bukti Transaksi</label> <input type="file" name="images[]" multiple accept="image/*" class="hidden" x-ref="fileInput"
                                     @change="addImages($event.target.files)">
                                 <div class="grid grid-cols-2 gap-3 mb-4">
@@ -282,15 +282,22 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> <button type="submit" id="btn-save"
-                            class="flex items-center justify-center w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 transform active:scale-95"> <span id="btn-text">Simpan Transaksi</span> 
+                        </div> 
+                        <button type="submit" id="btn-save"
+                            class="relative flex items-center justify-center w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden">
+                            
+                            {{-- Teks Tombol --}}
+                            <span id="btn-text" class="flex items-center">Simpan Transaksi</span>
+
                             {{-- Container Loading --}}
-                            <span id="btn-loading" class="hidden ml-2 flex items-center">
-                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http:
-                                    <circle class=" opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <div id="btn-loading" class="hidden absolute inset-0 bg-blue-600 flex items-center justify-center space-x-2">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                            </span> </button>
+                                <span class="text-sm">Memproses...</span>
+                            </div>
+                        </button>
                     </form>
                 </div>
             </div> 
@@ -405,6 +412,7 @@
                                                 data-date="{{ $entry->created_at->format('Y-m-d') }}" 
                                                 {{-- Wajib Y-m-d --}}
                                                 data-action-url="{{ route('lpj.entry.update', $entry->id) }}"
+                                                data-images='@json($entry->images)'                                                
                                                 class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                                 </svg>
@@ -456,457 +464,429 @@
     </div> 
     {{-- 5. MODAL EDIT --}}
     <div id="editModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all scale-100">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-slate-800">Edit Transaksi</h3>
-                <button onclick="closeEditModal()" class="text-slate-400 hover:text-rose-500 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            <form id="editModalForm" method="POST" enctype="multipart/form-data">
-                @csrf @method('PATCH') <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <input type="radio" name="type" value="debit" id="edit_debit" class="hidden peer/edebit">
-                        <label for="edit_debit" class="block w-full p-3 text-center border bg-slate-50 rounded-xl cursor-pointer peer-checked/edebit:bg-emerald-500 peer-checked/edebit:text-white transition">Debit</label>
-                    </div>
-                    <div>
-                        <input type="radio" name="type" value="credit" id="edit_credit" class="hidden peer/ecredit">
-                        <label for="edit_credit" class="block w-full p-3 text-center border bg-slate-50 rounded-xl cursor-pointer peer-checked/ecredit:bg-rose-500 peer-checked/ecredit:text-white transition">Kredit</label>
-                    </div>
+    <div x-data="editReceiptComponent()" 
+         @load-edit-images.window="loadImages($event.detail)"
+         class="bg-white rounded-2xl shadow-2xl p-5 w-full max-w-md transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
+        
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-slate-800">Edit Transaksi</h3>
+            <button type="button" onclick="closeEditModal()" class="text-slate-400 hover:text-rose-500 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form id="editModalForm" method="POST" enctype="multipart/form-data">
+            @csrf @method('PATCH')
+
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <div>
+                    <input type="radio" name="type" value="debit" id="edit_debit" class="hidden peer/edebit">
+                    <label for="edit_debit" class="block w-full py-2 text-center border bg-slate-50 rounded-xl cursor-pointer peer-checked/edebit:bg-emerald-500 peer-checked/edebit:text-white transition text-sm">Debit</label>
                 </div>
-                <div class="space-y-4">
+                <div>
+                    <input type="radio" name="type" value="credit" id="edit_credit" class="hidden peer/ecredit">
+                    <label for="edit_credit" class="block w-full py-2 text-center border bg-slate-50 rounded-xl cursor-pointer peer-checked/ecredit:bg-rose-500 peer-checked/ecredit:text-white transition text-sm">Kredit</label>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Tanggal</label>
-                        <input type="date" name="created_at" id="edit_created_at" class="w-full border-slate-200 bg-slate-50 rounded-xl p-3 text-sm">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tanggal</label>
+                        <input type="date" name="created_at" id="edit_created_at" class="w-full border-slate-200 bg-slate-50 rounded-xl p-2 text-sm">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Keterangan</label>
-                        <input type="text" name="description" id="edit_description" class="w-full border-slate-200 bg-slate-50 rounded-xl p-3 text-sm">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Nominal</label>
-                        <input type="text" id="edit_amount_display" class="w-full border-slate-200 bg-slate-50 rounded-xl p-3 text-sm font-mono font-bold">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Nominal</label>
+                        <input type="text" id="edit_amount_display" class="w-full border-slate-200 bg-slate-50 rounded-xl p-2 text-sm font-bold">
                         <input type="hidden" name="amount" id="edit_amount_real">
                     </div>
-                    <div x-data="editReceiptComponent()" class="space-y-4"> <!-- LABEL -->
-                        <label class="block text-xs font-bold text-slate-400 uppercase">
-                            Ganti Nota (Hanya menerima file gambar)
-                        </label> <!-- PILIHAN -->
-                        <div class="grid grid-cols-2 gap-4"> <!-- Upload -->
-                            <label class="cursor-pointer">
-                                <input type="file"
-                                    name="receipt_image[]"
-                                    accept="image/*"
-                                    multiple
-                                    class="hidden"
-                                    @change="handleUpload">
-                                <div class="h-24 rounded-2xl border-2 border-dashed border-slate-300
-                        bg-slate-100 text-slate-600
-                        flex flex-col items-center justify-center
-                        transition hover:bg-slate-200"> <svg class="w-6 h-6 mb-1 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 4v12m0 0l-4-4m4 4l4-4" />
-                                    </svg> <span class="text-sm font-medium">Upload</span>
-                                </div>
-                            </label> <!-- Kamera -->
-                            <div @click="openCamera"
-                                class="h-24 rounded-2xl border-2 border-dashed border-slate-300
-                    bg-slate-100 text-slate-600
-                    flex flex-col items-center justify-center
-                    cursor-pointer transition hover:bg-slate-200"> <svg class="w-7 h-7 mb-1 text-slate-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    viewBox="0 0 24 24">
-                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                                    <circle cx="12" cy="13" r="3" />
-                                </svg> <span class="text-sm font-medium">Kamera</span>
-                            </div>
-                        </div> <!-- CAMERA FLOATING -->
-                        <div x-show="cameraOpen"
-                            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                            <div class="bg-white p-4 rounded-2xl w-[400px] space-y-3">
-                                <div class="relative rounded-xl overflow-hidden border">
-                                    <video x-ref="video"
-                                        autoplay
-                                        playsinline
-                                        class="w-full"
-                                        :class="mirror ? 'scale-x-[-1]' : ''">
-                                    </video>
-                                </div>
-                                <div class="flex flex-wrap gap-2"> <button type="button"
-                                        @click="takePhoto"
-                                        class="px-3 py-2 bg-emerald-500 text-white rounded-lg text-sm">
-                                        Ambil
-                                    </button> <button type="button"
-                                        @click="toggleMirror"
-                                        class="px-3 py-2 bg-slate-500 text-white rounded-lg text-sm">
-                                        Mirror
-                                    </button> <button type="button"
-                                        @click="switchCamera"
-                                        class="px-3 py-2 bg-blue-500 text-white rounded-lg text-sm">
-                                        Switch
-                                    </button> <button type="button"
-                                        @click="closeCamera"
-                                        class="px-3 py-2 bg-red-500 text-white rounded-lg text-sm">
-                                        Tutup
-                                    </button> </div>
-                            </div>
-                        </div> <!-- PREVIEW MULTIPLE -->
-                        <div class="flex flex-wrap gap-4 mt-3"> <template x-for="(image, index) in images" :key="index">
-                                <div class="relative w-40">
-                                    <div class="bg-slate-700 p-2 rounded-xl">
-                                        <img :src="image"
-                                            class="w-full h-32 object-cover rounded-lg">
-                                    </div> <!-- Hapus -->
-                                    <button type="button"
-                                        @click="removeImage(index)"
-                                        class="absolute -top-2 -right-2 bg-red-500 text-white
-                               w-6 h-6 rounded-full text-xs flex items-center justify-center shadow">
-                                        ✕
-                                    </button>
-                                </div>
-                            </template> </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Keterangan</label>
+                    <input type="text" name="description" id="edit_description" class="w-full border-slate-200 bg-slate-50 rounded-xl p-2 text-sm">
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1">Bukti Transaksi</label>
+                    
+                    <input type="file" name="images[]" multiple accept="image/*" class="hidden" x-ref="fileInput" @change="addImages($event.target.files)">
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button type="button" @click="$refs.fileInput.click()" class="h-16 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center hover:bg-slate-50 transition group">
+                            <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-500 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 group-hover:text-blue-600">Upload</span>
+                        </button>
+                        <button type="button" @click="startCamera()" class="h-16 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center hover:bg-slate-50 transition group">
+                            <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-500 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /><circle cx="12" cy="13" r="3" /></svg>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 group-hover:text-blue-600">Kamera</span>
+                        </button>
                     </div>
-                </div> <button type="submit" class="w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition">Simpan Perubahan</button>
-            </form>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <template x-for="(img, index) in images" :key="index">
+                            <div class="relative aspect-square">
+                                <img :src="img.preview" class="w-full h-full object-cover rounded-xl border border-slate-200">
+                                <button type="button" @click="removeImage(index)" class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center shadow-md">✕</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition">Simpan Perubahan</button>
+        </form>
+
+        <div x-show="showCamera" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-md">
+                <div class="relative bg-black h-72 flex items-center justify-center">
+                    <video x-ref="videoPreview" autoplay playsinline :class="{ 'scale-x-[-1]': isMirrored }" class="w-full h-full object-cover"></video>
+                </div>
+                <div class="p-4 flex justify-between gap-4 bg-slate-900">
+                    <button type="button" @click="stopCamera()" class="text-white text-sm font-bold">Batal</button>
+                    <button type="button" @click="isMirrored = !isMirrored" class="text-blue-300 text-sm font-bold">Mirror</button>
+                    <button type="button" @click="takePicture()" class="px-6 py-2 bg-blue-600 rounded-full text-white font-bold">Jepret</button>
+                </div>
+            </div>
         </div>
-    </div> 
-    {{-- SCRIPT --}}
-    <script>
-        function closeEditModal() {
-            editModal.classList.add('hidden');
-        }
-
-        function formatRupiah(numberString) {
-            if (!numberString) return "";
-            let clean = numberString.toString().replace(/[^\d]/g, '');
-            return clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
-
-        function setupCurrencyInput(display, real) {
-            if (!display || !real) return;
-            display.addEventListener('input', (e) => {
-                let val = e.target.value;
-                let clean = val.replace(/[^\d]/g, '');
-                real.value = clean;
-                e.target.value = formatRupiah(clean);
-            });
-        }
-        setupCurrencyInput(document.getElementById('amount_display'), document.getElementById('amount_real'));
-        setupCurrencyInput(document.getElementById('edit_amount_display'), document.getElementById('edit_amount_real'));
-
-        function openEditModal(btn) {
-            const editForm = document.getElementById('editModalForm');
-            const editDisplayInput = document.getElementById('edit_amount_display');
-            const editRealInput = document.getElementById('edit_amount_real');
-            editForm.action = btn.dataset.actionUrl;
-            document.getElementById('edit_description').value = btn.dataset.description;
-            document.getElementById('edit_created_at').value = btn.dataset.date;
-            let rawAmount = btn.dataset.amount.toString();
-            let cleanAmount = rawAmount.split('.')[0];
-            editDisplayInput.value = formatRupiah(cleanAmount);
-            editRealInput.value = cleanAmount;
-            if (btn.dataset.type === 'debit') {
-                document.getElementById('edit_debit').checked = true;
-            } else {
-                document.getElementById('edit_credit').checked = true;
-            }
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-    </script>
+    </div>
+</div>
+ 
 </x-app-layout>
 <script>
-    $(document).ready(function() {
-        $('#form-transaksi').on('submit', function(e) {
-            e.preventDefault();
-            let form = $(this);
-            let formData = new FormData(this);
-            let btn = $('#btn-save');
-            let btnText = $('#btn-text');
-            let btnLoading = $('#btn-loading');
-            btn.prop('disabled', true);
-            btnText.text('Menyimpan...');
-            btnLoading.removeClass('hidden');
-            $.ajax({
-                url: form.attr('action'),
-                method: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: response.message,
-                        timer: 600,
-                        showConfirmButton: false
-                    });
-                    form[0].reset();
-                    setTimeout(function() {
-                        location.reload();
-                    }, 2000);
-                },
-                error: function(xhr) {
-                    let errorMessage = 'Terjadi kesalahan sistem.';
+    /**
+     * ==========================================
+     * 1. FUNGSI UTILITAS (Helper)
+     * ==========================================
+     */
+    const formatRupiah = (val) => {
+        if (!val) return "";
+        let clean = val.toString().replace(/[^\d]/g, '');
+        return clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
 
-                    if (xhr.responseJSON && xhr.responseJSON.errors) {
-                        errorMessage = Object.values(xhr.responseJSON.errors)[0][0];
-                    }
+    const setupCurrencyInput = (displayId, realId) => {
+        const display = document.getElementById(displayId);
+        const real = document.getElementById(realId);
+        if (!display || !real) return;
 
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: errorMessage
-                    });
-                },
-                complete: function() {
-                    btn.prop('disabled', false);
-                    btnText.text('Simpan Transaksi');
-                    btnLoading.addClass('hidden');
-                }
-            });
+        display.addEventListener('input', (e) => {
+            let clean = e.target.value.replace(/[^\d]/g, '');
+            real.value = clean;
+            e.target.value = formatRupiah(clean);
         });
-        $(document).on('click', '.btn-delete-entry', function() {
-            let btn = $(this);
-            let url = btn.data('url');
-            let id = btn.data('id');
-            Swal.fire({
-                title: 'Hapus Transaksi?',
-                text: "Data yang dihapus tidak bisa dikembalikan.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#94a3b8',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Terhapus!',
-                                text: response.message,
-                                timer: 600,
-                                showConfirmButton: false
-                            });
-                            $('#entry-' + id).fadeOut(500, function() {
-                                $(this).remove();
-                            });
-                        },
-                        error: function(xhr) {
-                            console.log(xhr.responseText); // 🔥 Tambahkan ini
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal Menyimpan',
-                                text: 'Cek console untuk detail error'
-                            });
-                        },
-                    });
-                }
-            });
-        });
-    });
+    };
 
-    function startDownloadAnimation(btn) {
-        const icon = document.getElementById('downloadIcon');
-        const spinner = document.getElementById('loadingSpinner');
-        const text = document.getElementById('btnText');
-        btn.classList.add('pointer-events-none', 'opacity-80');
-        icon.classList.add('hidden');
-        spinner.classList.remove('hidden');
-        text.innerText = 'Processing...';
-        window.addEventListener('focus', () => {
-            stopDownloadAnimation(btn, icon, spinner, text);
-        }, {
-            once: true
-        });
-        setTimeout(() => {
-            stopDownloadAnimation(btn, icon, spinner, text);
-        }, 10000);
-    }
+    const closeEditModal = () => {
+        document.getElementById('editModal').classList.add('hidden');
+    };
 
-    function stopDownloadAnimation(btn, icon, spinner, text) {
-        btn.classList.remove('pointer-events-none', 'opacity-80');
-        icon.classList.remove('hidden');
-        spinner.classList.add('hidden');
-        text.innerText = 'Download PDF';
-    }
-    $(document).ready(function() {
-        $('#form-edit-title').on('submit', function(e) {
-            e.preventDefault();
-            let form = $(this);
-            let btn = $('#btn-save-title');
-            let btnText = $('#title-btn-text');
-            let btnLoading = $('#title-btn-loading');
-            let newTitle = $('#input-title').val();
-            btn.prop('disabled', true);
-            btnText.text('Menyimpan...');
-            btnLoading.removeClass('hidden');
-            $.ajax({
-                url: form.attr('action'),
-                method: 'POST',
-                data: form.serialize(),
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: response.message,
-                        timer: 600,
-                        showConfirmButton: false
-                    });
-                    $('#current-lpj-title').text(response.new_title);
-                    hideEditForm();
-                },
-                error: function(xhr) {
-                    let errorMessage = xhr.responseJSON?.message || 'Gagal mengubah judul.';
-                    Swal.fire('Gagal!', errorMessage, 'error');
-                },
-                complete: function() {
-                    btn.prop('disabled', false);
-                    btnText.text('Simpan');
-                    btnLoading.addClass('hidden');
-                }
-            });
-        });
-    });
+    /**
+     * ==========================================
+     * 2. KOMPONEN ALPINE.JS (Nota Manager)
+     * ==========================================
+     */
 
-    function showEditForm() {
-        $('#title-display-container').addClass('hidden');
-        $('#form-edit-title').removeClass('hidden');
-        $('#input-title').focus();
-    }
+function editReceiptComponent() {
+    return {
+        images: [],      // Gabungan {id: null/ID, preview: url, file: file/null}
+        deleted_ids: [], // ID gambar lama yang dihapus
+        showCamera: false,
+        stream: null,
+        isMirrored: false,
 
-    function hideEditForm() {
-        $('#title-display-container').removeClass('hidden');
-        $('#form-edit-title').addClass('hidden');
-    }
-    $(document).ready(function() {
-        $('#form-edit-creator').on('submit', function(e) {
-            e.preventDefault();
-            let form = $(this);
-            let btn = $('#btn-save-creator');
-            let btnText = $('#creator-btn-text');
-            let btnLoading = $('#creator-btn-loading');
-            btn.prop('disabled', true);
-            btnText.text('...');
-            btnLoading.removeClass('hidden');
-            $.ajax({
-                url: form.attr('action'),
-                method: 'POST',
-                data: form.serialize(),
-                success: function(response) {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 800,
-                        timerProgressBar: true
-                    });
-                    Toast.fire({
-                        icon: 'success',
-                        title: response.message
-                    });
-                    $('#current-creator-name').text(response.new_name);
-                    hideEditCreator();
-                },
-                error: function() {
-                    Swal.fire('Gagal!', 'Tidak bisa mengubah nama.', 'error');
-                },
-                complete: function() {
-                    btn.prop('disabled', false);
-                    btnText.text('Simpan');
-                    btnLoading.addClass('hidden');
-                }
-            });
-        });
-    });
+        loadImages(data) {
+            this.deleted_ids = [];
+            // Mapping data dari database ke format preview Alpine
+            this.images = data.map(img => ({
+                id: img.id,
+                preview: `/storage/${img.image_path}`,
+                file: null
+            }));
+        },
 
-    function showEditCreator() {
-        $('#creator-display-container').addClass('hidden');
-        $('#form-edit-creator').removeClass('hidden');
-        $('#input-creator').focus();
-    }
-
-    function hideEditCreator() {
-        $('#creator-display-container').removeClass('hidden');
-        $('#form-edit-creator').addClass('hidden');
-    }
-
-    function editReceiptComponent() {
-        return {
-            images: [],
-            cameraOpen: false,
-            stream: null,
-            mirror: false,
-            currentFacing: "environment",
-            handleUpload(event) {
-                const files = event.target.files;
-                for (let file of files) {
-                    const reader = new FileReader();
-                    reader.onload = e => {
-                        this.images.push(e.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            },
-            async openCamera() {
-                this.cameraOpen = true;
-                await this.startCamera();
-            },
-            async startCamera() {
-                this.stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: this.currentFacing
-                    }
+        async startCamera() {
+            this.showCamera = true;
+            try {
+                this.stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" } 
                 });
-                this.$refs.video.srcObject = this.stream;
-            },
-            takePhoto() {
-                const canvas = document.createElement('canvas');
-                const video = this.$refs.video;
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                if (this.mirror) {
-                    ctx.translate(canvas.width, 0);
-                    ctx.scale(-1, 1);
-                }
-                ctx.drawImage(video, 0, 0);
-                this.images.push(canvas.toDataURL('image/png'));
-            },
-            toggleMirror() {
-                this.mirror = !this.mirror;
-            },
-            async switchCamera() {
-                this.currentFacing = this.currentFacing === "environment" ?
-                    "user" :
-                    "environment";
-                this.stopCamera();
-                await this.startCamera();
-            },
-            stopCamera() {
-                if (this.stream) {
-                    this.stream.getTracks().forEach(track => track.stop());
-                }
-            },
-            closeCamera() {
-                this.stopCamera();
-                this.cameraOpen = false;
-            },
-            removeImage(index) {
-                this.images.splice(index, 1);
+                this.$refs.videoPreview.srcObject = this.stream;
+            } catch (error) {
+                alert('Gagal akses kamera: ' + error.message);
+                this.showCamera = false;
             }
+        },
+
+        stopCamera() {
+            if (this.stream) {
+                this.stream.getTracks().forEach(track => track.stop());
+                this.stream = null;
+            }
+            this.showCamera = false;
+        },
+
+        takePicture() {
+            const canvas = document.createElement('canvas');
+            const video = this.$refs.videoPreview;
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            if (this.isMirrored) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(video, 0, 0);
+
+            canvas.toBlob((blob) => {
+                const file = new File([blob], `cam_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                this.addImages([file]);
+                this.stopCamera();
+            }, 'image/jpeg', 0.8);
+        },
+
+        addImages(files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.images.push({
+                        id: null,
+                        file: file,
+                        preview: e.target.result
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        },
+
+        removeImage(index) {
+            const img = this.images[index];
+            if (img.id) {
+                this.deleted_ids.push(img.id); // Simpan ID jika itu gambar lama dari DB
+            }
+            this.images.splice(index, 1);
         }
     }
+}
+
+/**
+     * ==========================================
+     * 3. LOGIKA MODAL EDIT (Vanilla JS)
+     * ==========================================
+     */
+    function openEditModal(btn) {
+        const form = document.getElementById('editModalForm');
+        
+        // Mapping Data dari Dataset ke Input
+        form.action = btn.dataset.actionUrl;
+        document.getElementById('edit_description').value = btn.dataset.description;
+        document.getElementById('edit_created_at').value = btn.dataset.date;
+        
+        const cleanAmount = btn.dataset.amount.toString().split('.')[0];
+        document.getElementById('edit_amount_real').value = cleanAmount;
+        document.getElementById('edit_amount_display').value = formatRupiah(cleanAmount);
+
+        document.getElementById(btn.dataset.type === 'debit' ? 'edit_debit' : 'edit_credit').checked = true;
+
+        // Reset & Load Images ke Alpine
+        document.querySelectorAll('input[name="deleted_images[]"]').forEach(el => el.remove());
+        const imageData = JSON.parse(btn.dataset.images || '[]');
+        window.dispatchEvent(new CustomEvent('load-edit-images', { detail: imageData }));
+
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    /**
+     * ==========================================
+     * 4. AJAX & EVENT LISTENERS (jQuery)
+     * ==========================================
+     */
+    $(document).ready(function() {
+        // Inisialisasi Masking Rupiah
+        setupCurrencyInput('amount_display', 'amount_real');
+        setupCurrencyInput('edit_amount_display', 'edit_amount_real');
+
+        // Submit Form Edit Transaksi
+           $('#editModalForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    const form = $(this);
+    const btn = form.find('button[type="submit"]');
+    const formData = new FormData(this);
+
+    // Ambil Instance Data dari Alpine
+    const alpineData = Alpine.$data(document.querySelector('#editModal [x-data]'));
+
+    // 1. Bersihkan input file bawaan HTML (karena kita kelola lewat Alpine)
+    formData.delete('images[]');
+
+    // 2. Masukkan file baru dari Alpine (Hasil kamera atau upload baru)
+    alpineData.images.forEach(img => {
+        if (img.file) {
+            formData.append('images[]', img.file);
+        }
+    });
+
+    // 3. Masukkan ID gambar yang dihapus
+    alpineData.deleted_ids.forEach(id => {
+        formData.append('deleted_images[]', id);
+    });
+
+    // 4. Spoofing Method (Route::patch)
+    formData.append('_method', 'PATCH');
+
+    btn.prop('disabled', true).text('Menyimpan...');
+
+    $.ajax({
+        url: form.attr('action'),
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: (res) => {
+            Swal.fire({ icon: 'success', title: 'Berhasil Update!', timer: 800, showConfirmButton: false });
+            setTimeout(() => location.reload(), 1000);
+        },
+        error: (xhr) => {
+            console.error(xhr.responseText);
+            Swal.fire('Error', 'Gagal memperbarui data', 'error');
+            btn.prop('disabled', false).text('Simpan Perubahan');
+        }
+    });
+});
+
+        // Submit Form Tambah Transaksi
+        $('#form-transaksi').on('submit', function(e) {
+            e.preventDefault();
+            const btn = $('#btn-save');
+            btn.prop('disabled', true).find('#btn-text').text('Menyimpan...');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                success: (res) => {
+                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: res.message, timer: 800, showConfirmButton: false });
+                    setTimeout(() => location.reload(), 1000);
+                },
+                complete: () => btn.prop('disabled', false).find('#btn-text').text('Simpan Transaksi')
+            });
+        });
+
+        // Hapus Transaksi
+        $(document).on('click', '.btn-delete-entry', function() {
+            const btn = $(this);
+            Swal.fire({
+                title: 'Hapus?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus!'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    $.ajax({
+                        url: btn.data('url'),
+                        type: 'DELETE',
+                        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                        success: () => {
+                            Swal.fire({ icon: 'success', title: 'Dihapus!', timer: 500, showConfirmButton: false });
+                            $('#entry-' + btn.data('id')).fadeOut();
+                        }
+                    });
+                }
+            });
+        });
+
+        // Edit Judul & Creator LPJ
+        const setupSimpleSubmit = (formId, btnId, textId, loadingId, callback) => {
+            $(`#${formId}`).on('submit', function(e) {
+                e.preventDefault();
+                const btn = $(`#${btnId}`);
+                btn.prop('disabled', true);
+                $(`#${textId}`).text('...');
+                $(`#${loadingId}`).removeClass('hidden');
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: (res) => {
+                        Swal.fire({ icon: 'success', title: 'Berhasil!', timer: 800, showConfirmButton: false });
+                        callback(res);
+                    },
+                    complete: () => {
+                        btn.prop('disabled', false);
+                        $(`#${textId}`).text('Simpan');
+                        $(`#${loadingId}`).addClass('hidden');
+                    }
+                });
+            });
+        };
+
+        setupSimpleSubmit('form-edit-title', 'btn-save-title', 'title-btn-text', 'title-btn-loading', (res) => {
+            $('#current-lpj-title').text(res.new_title);
+            hideEditForm();
+        });
+
+        setupSimpleSubmit('form-edit-creator', 'btn-save-creator', 'creator-btn-text', 'creator-btn-loading', (res) => {
+            $('#current-creator-name').text(res.new_name);
+            hideEditCreator();
+        });
+    });
+
+    /**
+     * ==========================================
+     * 5. UI TOGGLES (Judul & Creator)
+     * ==========================================
+     */
+    function showEditForm() { $('#title-display-container').addClass('hidden'); $('#form-edit-title').removeClass('hidden').find('input').focus(); }
+    function hideEditForm() { $('#title-display-container').removeClass('hidden'); $('#form-edit-title').addClass('hidden'); }
+    function showEditCreator() { $('#creator-display-container').addClass('hidden'); $('#form-edit-creator').removeClass('hidden').find('input').focus(); }
+    function hideEditCreator() { $('#creator-display-container').removeClass('hidden'); $('#form-edit-creator').addClass('hidden'); }
+
+let currentStream = null;
+
+async function startCamera(callback) {
+    const container = document.getElementById('camera-container');
+    const video = document.getElementById('webcam');
+    const captureBtn = document.getElementById('capture-btn');
+
+    try {
+        currentStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "environment" } // Prioritaskan kamera belakang jika di HP
+        });
+        
+        video.srcObject = currentStream;
+        container.classList.remove('hidden'); // Munculkan UI Kamera
+
+        // Tunggu klik tombol Jepret
+        captureBtn.onclick = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            canvas.toBlob((blob) => {
+                const file = new File([blob], `shot_${Date.now()}.jpg`, { type: "image/jpeg" });
+                callback(file); // Kirim ke Alpine
+                stopCameraStream(); // Tutup kamera
+            }, 'image/jpeg', 0.8);
+        };
+
+    } catch (err) {
+        alert("Kamera tidak dapat diakses. Pastikan izin diberikan.");
+    }
+}
+
+function stopCameraStream() {
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+    }
+    document.getElementById('camera-container').classList.add('hidden');
+}
+
 </script>

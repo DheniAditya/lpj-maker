@@ -180,35 +180,57 @@ private function compressImageToDataUrl($sourcePath)
 }
 
     public function updateEntry(Request $request, ExpenseEntry $entry)
-    {
-        $this->checkAccess($entry->expenseReport);
-        $validated = $request->validate([
-            'type' => 'required|in:debit,credit',
-            'created_at' => 'required|date',
-            'description' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
-            'receipt_image' => 'nullable|image|mimes:jpg,png,jpeg|max:5120'
-        ]);
+        {
+            $this->checkAccess($entry->expenseReport);
 
-        $imagePath = $entry->receipt_image_path; 
+            $validated = $request->validate([
+                'type' => 'required|in:debit,credit',
+                'created_at' => 'required|date',
+                'description' => 'required|string|max:255',
+                'amount' => 'required|numeric|min:0',
+                'images.*' => 'nullable|image|mimes:jpg,png,jpeg|max:5120',
+                'deleted_images' => 'nullable|array' // ID gambar yang diklik silang merah
+            ]);
 
-        if ($request->hasFile('receipt_image')) {
-            if ($entry->receipt_image_path) {
-                Storage::disk('public')->delete($entry->receipt_image_path);
+            // 1. Update data dasar (Teks, Angka, Tanggal)
+            $entry->update([
+                'type' => $validated['type'],
+                'created_at' => $validated['created_at'],
+                'description' => $validated['description'],
+                'amount' => $validated['amount'],
+            ]);
+
+            // 2. HANYA HAPUS gambar jika ada di list 'deleted_images'
+            // Jangan hapus semua gambar lama secara otomatis!
+            if ($request->has('deleted_images')) {
+                foreach ($request->deleted_images as $imageId) {
+                    $image = $entry->images()->find($imageId);
+                    if ($image) {
+                        // Hapus file fisik dari storage
+                        if (Storage::disk('public')->exists($image->image_path)) {
+                            Storage::disk('public')->delete($image->image_path);
+                        }
+                        // Hapus record dari database
+                        $image->delete();
+                    }
+                }
             }
-            $imagePath = $request->file('receipt_image')->store('receipts', 'public');
+
+            // 3. TAMBAHKAN gambar baru (Upload/Kamera) tanpa mengganggu yang lama
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    $path = $file->store('receipts', 'public');
+                    $entry->images()->create([
+                        'image_path' => $path
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Entri berhasil diperbarui!'
+            ]);
         }
-
-        $entry->update([
-            'type' => $validated['type'],
-            'created_at' => $validated['created_at'],
-            'description' => $validated['description'],
-            'amount' => $validated['amount'],
-            'receipt_image_path' => $imagePath,
-        ]);
-
-        return redirect()->back()->with('success', 'Entri berhasil diperbarui!');
-    }
 
     public function destroyEntry(ExpenseEntry $entry)
 {
@@ -247,54 +269,42 @@ private function compressImageToDataUrl($sourcePath)
 
     
     public function destroy($id)
-    {
-        
-        
-        $report = ExpenseReport::find($id); 
+{
+    $report = ExpenseReport::with('entries.images')->find($id); 
 
-        
-        if (!$report) {
-            
-            return response()->json([
-                'status' => 'error', 
-                'message' => 'Data laporan tidak ditemukan'
-            ], 404);
-        }
-
-        
-        if (\Illuminate\Support\Facades\Auth::id() !== $report->user_id) {
-            
-            return response()->json([
-                'status' => 'error', 
-                'message' => 'Anda tidak berhak menghapus laporan ini.'
-            ], 403);
-        }
-
-        
-        $report->delete();
-
-        
-        
-        return response()->json([
-            'status' => 'success', 
-            'message' => 'Laporan berhasil dihapus.'
-        ]);
+    if (!$report) {
+        return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan'], 404);
     }
+
+    // Gunakan checkAccess yang sudah kamu buat agar konsisten
+    $this->checkAccess($report);
+
+    // HAPUS FILE FISIK SEBELUM DELETE DATA
+    foreach ($report->entries as $entry) {
+        foreach ($entry->images as $image) {
+            if (Storage::disk('public')->exists($image->image_path)) {
+                Storage::disk('public')->delete($image->image_path);
+            }
+        }
+    }
+
+    $report->delete();
+
+    return response()->json([
+        'status' => 'success', 
+        'message' => 'Laporan dan semua lampiran berhasil dihapus.'
+    ]);
+}
 
 
     public function updateTitle(Request $request, ExpenseReport $report)
 {
-    $request->validate([
-        'title' => 'required|string|max:255',
-    ]);
+    $this->checkAccess($report); // TAMBAHKAN INI agar aman
+    $request->validate(['title' => 'required|string|max:255']);
 
-    
-$formattedTitle = Str::title($request->title); 
-    $report->update([
-        'title' => $formattedTitle,
-    ]);
+    $formattedTitle = Str::title($request->title); 
+    $report->update(['title' => $formattedTitle]);
 
-    
     return response()->json([
         'success' => true,
         'message' => 'Judul LPJ berhasil diperbarui!',
@@ -304,15 +314,11 @@ $formattedTitle = Str::title($request->title);
 
 public function updateCreator(Request $request, ExpenseReport $report)
 {
-    $request->validate([
-        'creator_name' => 'required|string|max:255',
-    ]);
+    $this->checkAccess($report); // TAMBAHKAN INI
+    $request->validate(['creator_name' => 'required|string|max:255']);
 
     $formattedName = Str::title($request->creator_name); 
-
-    $report->update([
-        'creator_name' => $formattedName,
-    ]);
+    $report->update(['creator_name' => $formattedName]);
 
     return response()->json([
         'success' => true,
