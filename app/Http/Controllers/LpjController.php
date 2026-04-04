@@ -90,93 +90,21 @@ return response()->json([
 public function downloadPdf(ExpenseReport $report)
 {
     $this->checkAccess($report);
-    ini_set('memory_limit', '512M');
+    
+    // PASTIKAN line ini ada untuk memuat data gambar dari tabel relasi
+    $report->load(['entries.images']); 
 
-    try {
-        
-        $report->load('entries.images');
+    // Render PDF
+    $pdf = Pdf::loadView('lpj.pdf_template', compact('report'));
+    
+    // Tambahkan opsi ini agar DomPDF diizinkan membaca file lokal
+    $pdf->setOptions([
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'chroot' => public_path(), // Memberi izin akses ke folder public
+    ]);
 
-        $receiptImages = [];
-        foreach ($report->entries as $entry) {
-            
-            foreach ($entry->images as $image) {
-                $realPath = storage_path('app/public/' . $image->image_path);
-
-                if (file_exists($realPath)) {
-                    
-                    $base64 = $this->compressImageToDataUrl($realPath);
-
-                    if ($base64) {
-                        $receiptImages[] = [
-                            'image_src' => $base64,
-                            'description' => $entry->description,
-                            'amount' => $entry->amount,
-                            'type' => $entry->type,
-                        ];
-                    }
-                }
-            }
-        }
-
-        $groupedReceipts = collect($receiptImages)->chunk(4);
-        $pdf = Pdf::loadView('lpj.pdf_template', compact('report', 'groupedReceipts'));
-        $pdf->setPaper('a4', 'portrait');
-
-        return $pdf->download("LPJ - {$report->title}.pdf");
-
-    } catch (\Throwable $e) {
-        return redirect()->back()->with('error', 'Gagal generate PDF: ' . $e->getMessage());
-    }
-}
-
-
-private function compressImageToDataUrl($sourcePath)
-{
-    try {
-        
-        list($width, $height, $type) = getimagesize($sourcePath);
-        
-        
-        switch ($type) {
-            case IMAGETYPE_JPEG:
-                $image = imagecreatefromjpeg($sourcePath);
-                break;
-            case IMAGETYPE_PNG:
-                $image = imagecreatefrompng($sourcePath);
-                
-                $bg = imagecreatetruecolor($width, $height);
-                imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
-                imagecopy($bg, $image, 0, 0, 0, 0, $width, $height);
-                $image = $bg;
-                break;
-            case IMAGETYPE_GIF:
-                $image = imagecreatefromgif($sourcePath);
-                break;
-            default:
-                return null;
-        }
-
-        
-        $maxWidth = 800;
-        if ($width > $maxWidth) {
-            $newWidth = $maxWidth;
-            $newHeight = ($height / $width) * $newWidth;
-            $imageResized = imagescale($image, $newWidth, $newHeight);
-            $image = $imageResized;
-        }
-
-        
-        ob_start();
-        imagejpeg($image, null, 60); 
-        $data = ob_get_clean();
-
-        
-        return 'data:image/jpeg;base64,' . base64_encode($data);
-
-    } catch (\Exception $e) {
-        Log::error("Gagal kompres gambar: " . $e->getMessage());
-        return null; 
-    }
+    return $pdf->download("LPJ - {$report->title}.pdf");
 }
 
     public function updateEntry(Request $request, ExpenseEntry $entry)

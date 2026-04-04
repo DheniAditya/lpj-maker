@@ -114,25 +114,15 @@
                 </div>
             </div> 
             {{-- Tombol Download PDF --}}
-            <a href="{{ route('lpj.download', $report->slug) }}"
-                id="downloadBtn"
-                onclick="startDownloadAnimation(this)"
-                class="group bg-slate-800 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center hover:bg-slate-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"> 
-                {{-- Ikon Download Asli --}}
-                <svg id="downloadIcon" class="w-5 h-5 mr-2 text-slate-400 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                </svg> 
-                {{-- Ikon Loading (Hidden by default) --}}
-                <svg id="loadingSpinner" 
-                    class="hidden animate-spin h-5 w-5 mr-2 text-white" 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    fill="none" 
-                    viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg> 
-                <span id="btnText">Download PDF</span>
-            </a>
+           <a href="{{ route('lpj.download', $report->slug) }}"
+   id="downloadBtn"
+   target="_blank"
+   class="group bg-slate-800 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center hover:bg-slate-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"> 
+    <svg id="downloadIcon" class="w-5 h-5 mr-2 text-slate-400 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+    </svg> 
+    <span id="btnText">Download PDF</span>
+</a>
         </div> 
         {{-- Form & Tabel --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"> 
