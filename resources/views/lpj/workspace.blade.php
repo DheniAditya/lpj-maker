@@ -324,7 +324,7 @@
                                                 {{-- Tombol Pemicu --}}
                                                 <button type="button" @click="open = true" 
                                                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition shadow-sm border 
-                                                    {{ $imageCount > 1 ? 'bg-blue-600 text-white border-blue-700 hover:bg-blue-700' : 'bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100' }}">
+                                                    {{ $imageCount > 1 ? 'bg-blue-600 text-white border-blue-700 hover:bg-blue-800' : 'bg-blue-600 text-white border-blue-700 hover:bg-blue-800' }}">
                                                     
                                                     {{-- Ikon Gambar Sesuai Request --}}
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,7 +349,7 @@
                                                             {{-- Header Modal --}}
                                                             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
                                                                 <div>
-                                                                    <h3 class="text-lg font-bold text-slate-800">Lampiran Nota</h3>
+                                                                    <h3 class="text-lg font-bold text-slate-800">Nota</h3>
                                                                     <p class="text-xs text-slate-500 font-medium">{{ $entry->description }} • {{ $imageCount }} File</p>
                                                                 </div>
                                                                 <button @click="open = false" class="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition">
@@ -379,7 +379,7 @@
                                                 </template>
                                             </div>
                                         @else
-                                            <span class="text-[10px] font-bold text-slate-300 uppercase tracking-tighter italic">Kosong</span>
+                                            <span class="text-[10px] text-red-300 ">Tidak Ada</span>
                                         @endif
                                     </td>
                                     <td class="p-4 text-right font-mono text-sm tracking-tight">
