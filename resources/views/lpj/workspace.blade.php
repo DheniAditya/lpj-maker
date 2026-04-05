@@ -264,10 +264,30 @@
                                         <div class="relative bg-black h-72 flex items-center justify-center">
                                             <video x-ref="videoPreview" autoplay playsinline :class="{ 'scale-x-[-1]': isMirrored }" class="w-full h-full object-cover"></video>
                                         </div>
-                                        <div class="p-4 flex justify-between gap-4 bg-slate-900">
-                                            <button type="button" @click="stopCamera()" class="text-white text-sm font-bold">Batal</button>
-                                            <button type="button" @click="isMirrored = !isMirrored" class="text-blue-300 text-sm font-bold">Mirror</button>
-                                            <button type="button" @click="takePicture()" class="px-6 py-2 bg-blue-600 rounded-full text-white font-bold hover:bg-blue-500">Jepret</button>
+                                        <div class="p-4 flex justify-between items-center gap-4 bg-slate-900 border-t border-slate-800 shadow-2xl">
+    
+                                            <button type="button" @click="stopCamera()" 
+                                                class="flex items-center gap-2 px-2 py-2 bg-slate-800 hover:bg-red-600 text-white text-sm font-bold rounded-xl transition-all duration-200 group">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+
+                                            <button type="button" @click="isMirrored = !isMirrored" 
+                                                class="flex items-center gap-2 px-2 py-2 border border-blue-500/50 text-blue-400 hover:bg-blue-500 hover:text-white text-sm font-bold rounded-xl transition-all duration-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                                </svg>
+                                            </button>
+
+                                            <button type="button" @click="takePicture()" 
+                                                class="flex items-center gap-2 px-2 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] transform active:scale-90 transition-all duration-150">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                            </button>
+
                                         </div>
                                     </div>
                                 </div>
@@ -534,10 +554,30 @@
                 <div class="relative bg-black h-72 flex items-center justify-center">
                     <video x-ref="videoPreview" autoplay playsinline :class="{ 'scale-x-[-1]': isMirrored }" class="w-full h-full object-cover"></video>
                 </div>
-                <div class="p-4 flex justify-between gap-4 bg-slate-900">
-                    <button type="button" @click="stopCamera()" class="text-white text-sm font-bold">Batal</button>
-                    <button type="button" @click="isMirrored = !isMirrored" class="text-blue-300 text-sm font-bold">Mirror</button>
-                    <button type="button" @click="takePicture()" class="px-6 py-2 bg-blue-600 rounded-full text-white font-bold">Jepret</button>
+                <div class="p-4 flex justify-between items-center gap-4 bg-slate-900 border-t border-slate-800">
+    
+                    <button type="button" @click="stopCamera()" title="Batal"
+                        class="flex items-center justify-center w-10 h-10 bg-slate-800 hover:bg-red-600 text-white rounded-xl transition-all duration-200 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <button type="button" @click="isMirrored = !isMirrored" title="Mirror Kamera"
+                        class="flex items-center justify-center w-10 h-10 border border-blue-500/50 text-blue-400 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </button>
+
+                    <button type="button" @click="takePicture()" title="Ambil Foto"
+                        class="flex items-center justify-center w-14 h-14 bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] transform active:scale-90 transition-all duration-150">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+
                 </div>
             </div>
         </div>
