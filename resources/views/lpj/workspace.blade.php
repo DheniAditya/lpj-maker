@@ -174,59 +174,106 @@
                             </div> 
                             
                             <div x-data="{ 
-                                images: [], 
-                                showCamera: false, 
-                                stream: null,
-                                isMirrored: false,    async startCamera() {
-                                    this.showCamera = true;
-                                    try {
-                                        this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                                        $refs.videoPreview.srcObject = this.stream;
-                                    } catch (error) {
-                                        alert('Gagal akses kamera: ' + error.message);
-                                        this.showCamera = false;
-                                    }
-                                },    stopCamera() {
-                                    if (this.stream) {
-                                        this.stream.getTracks().forEach(track => track.stop());
-                                        this.stream = null;
-                                    }
-                                    this.showCamera = false;
-                                },    addImages(files) {
-                                    Array.from(files).forEach(file => {
-                                        const reader = new FileReader();
-                                        reader.onload = (e) => {
-                                            this.images.push({
-                                                file: file,
-                                                preview: e.target.result
-                                            });
-                                            this.updateInputFiles();
-                                        };
-                                        reader.readAsDataURL(file);
-                                    });
-                                },    takePicture() {
-                                    const canvas = document.createElement('canvas');
-                                    const video = $refs.videoPreview;
-                                    const ctx = canvas.getContext('2d');
-                                    canvas.width = video.videoWidth;
-                                    canvas.height = video.videoHeight;        if (this.isMirrored) {
-                                        ctx.translate(canvas.width, 0);
-                                        ctx.scale(-1, 1);
-                                    }
-                                    ctx.drawImage(video, 0, 0);        canvas.toBlob((blob) => {
-                                        const file = new File([blob], `camera_${Date.now()}.jpg`, { type: 'image/jpeg' });
-                                        this.addImages([file]);
-                                        this.stopCamera();
-                                    }, 'image/jpeg');
-                                },    removeImage(index) {
-                                    this.images.splice(index, 1);
-                                    this.updateInputFiles();
-                                },    updateInputFiles() {
-                                    const dt = new DataTransfer();
-                                    this.images.forEach(img => dt.items.add(img.file));
-                                    $refs.fileInput.files = dt.files;
-                                }
-                                }">
+    images: [], 
+    showCamera: false, 
+    stream: null,
+    isMirrored: false,
+    facingMode: 'user', // Default: kamera depan
+
+    async startCamera() {
+        this.showCamera = true;
+        
+        // Pastikan stream lama benar-benar mati sebelum mulai yang baru
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+        }
+
+        const constraints = {
+            video: {
+                facingMode: this.facingMode,
+                // Optional: resolusi agar hasil nota tajam
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        };
+
+        try {
+            this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+            this.$refs.videoPreview.srcObject = this.stream;
+        } catch (error) {
+            console.error('Gagal akses kamera:', error);
+            alert('Kamera tidak ditemukan atau izin ditolak.');
+            this.showCamera = false;
+        }
+    },
+
+    async switchCamera() {
+        // Ganti mode: jika 'user' jadi 'environment', dan sebaliknya
+        this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+        
+        // Mirror otomatis mati jika pakai kamera belakang, nyala jika kamera depan
+        this.isMirrored = (this.facingMode === 'user');
+        
+        // Restart kamera dengan mode baru
+        await this.startCamera();
+    },
+
+    stopCamera() {
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+        }
+        this.showCamera = false;
+    },
+
+    takePicture() {
+        const canvas = document.createElement('canvas');
+        const video = this.$refs.videoPreview;
+        const ctx = canvas.getContext('2d');
+        
+        // Ambil resolusi asli video agar tidak buram
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        if (this.isMirrored) {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
+
+        ctx.drawImage(video, 0, 0);
+
+        canvas.toBlob((blob) => {
+            const file = new File([blob], `nota_${Date.now()}.jpg`, { type: 'image/jpeg' });
+            this.addImages([file]);
+            this.stopCamera();
+        }, 'image/jpeg', 0.8); // 0.8 adalah kualitas kompresi
+    },
+
+    addImages(files) {
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.images.push({
+                    file: file,
+                    preview: e.target.result
+                });
+                this.updateInputFiles();
+            };
+            reader.readAsDataURL(file);
+        });
+    },
+
+    removeImage(index) {
+        this.images.splice(index, 1);
+        this.updateInputFiles();
+    },
+
+    updateInputFiles() {
+        const dt = new DataTransfer();
+        this.images.forEach(img => dt.items.add(img.file));
+        this.$refs.fileInput.files = dt.files;
+    }
+}">
                                 <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Bukti Transaksi</label> <input type="file" name="images[]" multiple accept="image/*" class="hidden" x-ref="fileInput"
                                     @change="addImages($event.target.files)">
                                 <div class="grid grid-cols-2 gap-3 mb-4">
@@ -259,35 +306,51 @@
                                     </template>
                                 </div> 
                                 {{-- MODAL KAMERA TETAP SAMA --}}
-                                <div x-show="showCamera" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                                    <div class="bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-md">
-                                        <div class="relative bg-black h-72 flex items-center justify-center">
-                                            <video x-ref="videoPreview" autoplay playsinline :class="{ 'scale-x-[-1]': isMirrored }" class="w-full h-full object-cover"></video>
-                                        </div>
-                                        <div class="p-4 flex justify-between items-center gap-4 bg-slate-900 border-t border-slate-800 shadow-2xl">
-    
+                                <div x-show="showCamera" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center bg-transparent p-0 sm:p-4">
+                                    <div class="relative bg-black overflow-hidden shadow-2xl w-full max-w-md h-full sm:h-[80vh] sm:rounded-3xl flex flex-col">
+                                        
+                                        <div class="relative flex-1 bg-slate-900 flex items-center justify-center overflow-hidden">
+                                            <video x-ref="videoPreview" autoplay playsinline 
+                                                :class="{ 'scale-x-[-1]': isMirrored }" 
+                                                class="w-full h-full object-cover"></video>
+
                                             <button type="button" @click="stopCamera()" 
-                                                class="flex items-center gap-2 px-2 py-2 bg-slate-800 hover:bg-red-600 text-white text-sm font-bold rounded-xl transition-all duration-200 group">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md text-white rounded-full hover:bg-red-500 transition-all duration-300 z-10">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
                                             </button>
+                                        </div>
 
-                                            <button type="button" @click="isMirrored = !isMirrored" 
-                                                class="flex items-center gap-2 px-2 py-2 border border-blue-500/50 text-blue-400 hover:bg-blue-500 hover:text-white text-sm font-bold rounded-xl transition-all duration-200">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                                </svg>
-                                            </button>
+                                        <div class="absolute bottom-0 left-0 right-0 p-8 pb-12 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                                            <div class="flex items-center justify-around gap-4">
+                                                
+                                                <button type="button" @click="isMirrored = !isMirrored" 
+                                                    class="flex items-center justify-center w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl hover:bg-white/20 transition-all group">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                            class="fill-white/20 group-hover:fill-white/40 transition-colors"
+                                                            d="M8 5l-6 14h6V5z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5l6 14h-6V5z" />
+                                                    </svg>
+                                                </button>
 
-                                            <button type="button" @click="takePicture()" 
-                                                class="flex items-center gap-2 px-2 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] transform active:scale-90 transition-all duration-150">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                </svg>
-                                            </button>
+                                                <button type="button" @click="takePicture()" 
+                                                    class="relative flex items-center justify-center w-20 h-20 bg-white rounded-full p-1 shadow-2xl transform active:scale-90 transition-all duration-150">
+                                                    <div class="w-full h-full rounded-full border-4 border-black/10 flex items-center justify-center">
+                                                        <div class="w-14 h-14 bg-white rounded-full border-2 border-slate-200"></div>
+                                                    </div>
+                                                </button>
 
+                                                <button type="button" @click="switchCamera()" 
+                                                    class="flex items-center justify-center w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl hover:bg-white/20 transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                    </svg>
+                                                </button>
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -549,38 +612,56 @@
             <button type="submit" class="w-full mt-6 bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition">Simpan Perubahan</button>
         </form>
 
-        <div x-show="showCamera" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-            <div class="bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-md">
-                <div class="relative bg-black h-72 flex items-center justify-center">
-                    <video x-ref="videoPreview" autoplay playsinline :class="{ 'scale-x-[-1]': isMirrored }" class="w-full h-full object-cover"></video>
-                </div>
-                <div class="p-4 flex justify-between items-center gap-4 bg-slate-900 border-t border-slate-800">
-    
-                    <button type="button" @click="stopCamera()" title="Batal"
-                        class="flex items-center justify-center w-10 h-10 bg-slate-800 hover:bg-red-600 text-white rounded-xl transition-all duration-200 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <div x-show="showCamera" x-cloak 
+                class="fixed inset-0 z-[70] flex items-center justify-center bg-transparent backdrop-blur-sm p-0 sm:p-4">
+                
+                <div class="relative bg-transparent overflow-hidden shadow-2xl w-full max-w-md h-full sm:h-[80vh] sm:rounded-2xl flex flex-col">
+                    
+                    <div class="relative flex-1 bg-slate-900 flex items-center justify-center overflow-hidden">
+                        <video x-ref="videoPreview" autoplay playsinline 
+                            :class="{ 'scale-x-[-1]': isMirrored }" 
+                            class="w-full h-full object-cover"></video>
 
-                    <button type="button" @click="isMirrored = !isMirrored" title="Mirror Kamera"
-                        class="flex items-center justify-center w-10 h-10 border border-blue-500/50 text-blue-400 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                        </svg>
-                    </button>
+                        <button type="button" @click="stopCamera()" 
+                            class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md text-white rounded-full hover:bg-red-500 transition-all duration-300 z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
 
-                    <button type="button" @click="takePicture()" title="Ambil Foto"
-                        class="flex items-center justify-center w-14 h-14 bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] transform active:scale-90 transition-all duration-150">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 pb-12 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                        <div class="flex items-center justify-around gap-4">
+                            
+                            <button type="button" @click="isMirrored = !isMirrored" title="Mirror Mode"
+                                class="flex items-center justify-center w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl hover:bg-white/20 transition-all group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        class="fill-white/20 group-hover:fill-white/40 transition-colors"
+                                        d="M9 5l-7 14h7V5z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5l7 14h-7V5z" />
+                                </svg>
+                            </button>
 
+                            <button type="button" @click="takePicture()" title="Ambil Foto"
+                                class="relative flex items-center justify-center w-20 h-20 bg-white rounded-full p-1 shadow-2xl transform active:scale-90 transition-all duration-150">
+                                <div class="w-full h-full rounded-full border-4 border-black/10 flex items-center justify-center">
+                                    <div class="w-14 h-14 bg-white rounded-full border-2 border-slate-200"></div>
+                                </div>
+                            </button>
+
+                            <button type="button" @click="switchCamera()" title="Ganti Kamera"
+                                class="flex items-center justify-center w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl hover:bg-white/20 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
  
@@ -621,15 +702,15 @@
 
 function editReceiptComponent() {
     return {
-        images: [],      // Gabungan {id: null/ID, preview: url, file: file/null}
-        deleted_ids: [], // ID gambar lama yang dihapus
+        images: [],      
+        deleted_ids: [], 
         showCamera: false,
         stream: null,
         isMirrored: false,
+        facingMode: 'user', // Tambahkan state default (user = depan, environment = belakang)
 
         loadImages(data) {
             this.deleted_ids = [];
-            // Mapping data dari database ke format preview Alpine
             this.images = data.map(img => ({
                 id: img.id,
                 preview: `/storage/${img.image_path}`,
@@ -639,15 +720,38 @@ function editReceiptComponent() {
 
         async startCamera() {
             this.showCamera = true;
+            
+            // Hentikan stream lama jika ada sebelum ganti kamera
+            if (this.stream) {
+                this.stream.getTracks().forEach(track => track.stop());
+            }
+
             try {
                 this.stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "environment" } 
+                    video: { 
+                        facingMode: this.facingMode, // Gunakan variabel dynamic
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
                 });
                 this.$refs.videoPreview.srcObject = this.stream;
             } catch (error) {
+                console.error('Gagal akses kamera:', error);
                 alert('Gagal akses kamera: ' + error.message);
                 this.showCamera = false;
             }
+        },
+
+        // --- TAMBAHKAN FUNGSI INI ---
+        async switchCamera() {
+            // Tukar mode kamera
+            this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+            
+            // Auto mirror: Aktif jika kamera depan (user), Mati jika kamera belakang (environment)
+            this.isMirrored = (this.facingMode === 'user');
+            
+            // Restart kamera dengan mode baru
+            await this.startCamera();
         },
 
         stopCamera() {
@@ -662,6 +766,8 @@ function editReceiptComponent() {
             const canvas = document.createElement('canvas');
             const video = this.$refs.videoPreview;
             const ctx = canvas.getContext('2d');
+            
+            // Pastikan menggunakan resolusi asli video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
@@ -695,7 +801,7 @@ function editReceiptComponent() {
         removeImage(index) {
             const img = this.images[index];
             if (img.id) {
-                this.deleted_ids.push(img.id); // Simpan ID jika itu gambar lama dari DB
+                this.deleted_ids.push(img.id); 
             }
             this.images.splice(index, 1);
         }
