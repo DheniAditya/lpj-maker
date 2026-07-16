@@ -9,7 +9,8 @@ use App\Http\Controllers\ProfileController;
 Route::get('/', [LpjController::class, 'create'])->name('lpj.create');
 
 Route::post('/lpj/store', [LpjController::class, 'storeReport'])->name('lpj.store');
-
+Route::post('/lpj/{report}/toggle-share', [LpjController::class, 'toggleSharing']);
+Route::get('/lpj/share/{token}', [LpjController::class, 'handleShareLink'])->name('lpj.share');
 Route::get('/lpj/{report:slug}', [LpjController::class, 'show'])->name('lpj.show');
 Route::put('/lpj/{report:slug}/update-title', [LpjController::class, 'updateTitle'])->name('lpj.update-title');
 Route::put('/lpj/{report:slug}/update-creator', [LpjController::class, 'updateCreator'])->name('lpj.update-creator');
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::delete('/lpj/{id}', [App\Http\Controllers\LpjController::class, 'destroy'])->name('lpj.destroy');
+
     });
 
 require __DIR__.'/auth.php';
