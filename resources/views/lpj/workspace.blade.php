@@ -209,10 +209,10 @@
 
     async switchCamera() {
         // Ganti mode: jika 'user' jadi 'environment', dan sebaliknya
-        this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+        this.facingMode = this.facingMode == 'user' ? 'environment' : 'user';
         
         // Mirror otomatis mati jika pakai kamera belakang, nyala jika kamera depan
-        this.isMirrored = (this.facingMode === 'user');
+        this.isMirrored = (this.facingMode == 'user');
         
         // Restart kamera dengan mode baru
         await this.startCamera();
@@ -668,9 +668,9 @@
 </x-app-layout>
 <script>
     /**
-     * ==========================================
+     * ============================
      * 1. FUNGSI UTILITAS (Helper)
-     * ==========================================
+     * ============================
      */
     const formatRupiah = (val) => {
         if (!val) return "";
@@ -695,9 +695,9 @@
     };
 
     /**
-     * ==========================================
+     * ============================
      * 2. KOMPONEN ALPINE.JS (Nota Manager)
-     * ==========================================
+     * ============================
      */
 
 function editReceiptComponent() {
@@ -745,10 +745,10 @@ function editReceiptComponent() {
         // --- TAMBAHKAN FUNGSI INI ---
         async switchCamera() {
             // Tukar mode kamera
-            this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+            this.facingMode = this.facingMode == 'user' ? 'environment' : 'user';
             
             // Auto mirror: Aktif jika kamera depan (user), Mati jika kamera belakang (environment)
-            this.isMirrored = (this.facingMode === 'user');
+            this.isMirrored = (this.facingMode == 'user');
             
             // Restart kamera dengan mode baru
             await this.startCamera();
@@ -809,9 +809,9 @@ function editReceiptComponent() {
 }
 
 /**
-     * ==========================================
+     * ============================
      * 3. LOGIKA MODAL EDIT (Vanilla JS)
-     * ==========================================
+     * ============================
      */
     function openEditModal(btn) {
         const form = document.getElementById('editModalForm');
@@ -825,7 +825,7 @@ function editReceiptComponent() {
         document.getElementById('edit_amount_real').value = cleanAmount;
         document.getElementById('edit_amount_display').value = formatRupiah(cleanAmount);
 
-        document.getElementById(btn.dataset.type === 'debit' ? 'edit_debit' : 'edit_credit').checked = true;
+        document.getElementById(btn.dataset.type == 'debit' ? 'edit_debit' : 'edit_credit').checked = true;
 
         // Reset & Load Images ke Alpine
         document.querySelectorAll('input[name="deleted_images[]"]').forEach(el => el.remove());
@@ -836,9 +836,9 @@ function editReceiptComponent() {
     }
 
     /**
-     * ==========================================
+     * ============================
      * 4. AJAX & EVENT LISTENERS (jQuery)
-     * ==========================================
+     * ============================
      */
     $(document).ready(function() {
         // Inisialisasi Masking Rupiah
@@ -975,9 +975,9 @@ function editReceiptComponent() {
     });
 
     /**
-     * ==========================================
+     * ============================
      * 5. UI TOGGLES (Judul & Creator)
-     * ==========================================
+     * ============================
      */
     function showEditForm() { $('#title-display-container').addClass('hidden'); $('#form-edit-title').removeClass('hidden').find('input').focus(); }
     function hideEditForm() { $('#title-display-container').removeClass('hidden'); $('#form-edit-title').addClass('hidden'); }

@@ -222,7 +222,7 @@ class LpjController extends Controller
 
     public function toggleSharing(Request $request, ExpenseReport $report)
 {
-    if ($report->user_id !== Auth::id()) {
+    if ($report->user_id != Auth::id()) {
         return response()->json(['message' => 'Unauthorized'], 403);
     }
 
@@ -232,7 +232,7 @@ class LpjController extends Controller
     }
 
     $report->update([
-        'is_shared' => $request->is_shared === 'true' || $request->is_shared === true,
+        'is_shared' => $request->is_shared == 'true' || $request->is_shared == true,
         'share_role' => $request->share_role,
         'share_token' => $report->share_token
     ]);
@@ -251,7 +251,7 @@ class LpjController extends Controller
         $userId = Auth::id();
 
         // 1. Cek jika Owner (User yang login)
-        if ($userId && $report->user_id === $userId) {
+        if ($userId && $report->user_id == $userId) {
             return true;
         }
 
@@ -266,7 +266,7 @@ class LpjController extends Controller
         if ($report->is_shared && in_array($report->share_token, $accessedTokens)) {
             
             // Jika butuh akses 'editor', tapi link hanya diset 'viewer', tolak.
-            if ($requiredRole === 'editor' && $report->share_role !== 'editor') {
+            if ($requiredRole == 'editor' && $report->share_role != 'editor') {
                 abort(403, 'Anda hanya memiliki izin pelihat (viewer).');
             }
             return true;
@@ -285,7 +285,7 @@ class LpjController extends Controller
 
         // PROTEKSI KETAT: Hanya pemilik asli yang bisa menghapus total laporan
         // Guest atau link editor tidak boleh menghapus file orang lain
-        if ($report->user_id !== Auth::id() && !in_array($report->slug, session()->get('guest_lpj_slugs', []))) {
+        if ($report->user_id != Auth::id() && !in_array($report->slug, session()->get('guest_lpj_slugs', []))) {
             abort(403, 'Hanya pemilik laporan yang diizinkan untuk menghapus laporan ini.');
         }
 

@@ -169,10 +169,10 @@
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1">Izin Akses</label>
                     <div class="flex gap-2 mb-4 p-1 bg-slate-100 rounded-xl">
                         <button @click="updateRole('viewer')" 
-                                :class="role === 'viewer' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'"
+                                :class="role == 'viewer' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'"
                                 class="flex-1 py-2 rounded-lg text-xs font-bold transition-all uppercase">Pelihat</button>
                         <button @click="updateRole('editor')" 
-                                :class="role === 'editor' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'"
+                                :class="role == 'editor' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'"
                                 class="flex-1 py-2 rounded-lg text-xs font-bold transition-all uppercase">Editor</button>
                     </div>
 
