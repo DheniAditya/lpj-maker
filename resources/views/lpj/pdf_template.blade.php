@@ -35,8 +35,8 @@
         .title { font-size: 20px; font-weight: bold; color: #0f2a4a; text-align: center; margin: 6px 0 4px; }
         .accent-rule { width: 48px; height: 3px; background: #0f2a4a; border-radius: 2px; margin: 8px auto 14px; }
 
-        .meta { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
-        .meta td { width: 50%; padding: 8px 12px; vertical-align: top; }
+        .meta { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+        .meta td { width: 50%; padding: 7px 10px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
         .meta-label { display: block; font-size: 7.5px; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8; margin-bottom: 2px; }
         .meta-value { font-size: 10.5px; font-weight: bold; color: #1e293b; }
 
