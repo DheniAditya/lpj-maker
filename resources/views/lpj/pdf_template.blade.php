@@ -41,7 +41,7 @@
         .meta-value { font-size: 10.5px; font-weight: bold; color: #1e293b; }
 
         /* ---------- Tabel (sudut membulat: border-collapse separate) ---------- */
-        .ledger { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; border: 1px solid #0f2a4a; border-radius: 10px; }
+        .ledger { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
         .ledger th {
             background: #0f2a4a; color: #e2e8f0; font-size: 8px; font-weight: bold; letter-spacing: 1px;
             text-transform: uppercase; padding: 9px 8px; text-align: left;
@@ -52,6 +52,10 @@
         .ledger th.center, .ledger td.center { text-align: center; }
         .ledger td { padding: 7px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; word-wrap: break-word; }
         .ledger tbody tr.even td { background: #f8fafc; }
+        /* Garis tepi tipis abu-abu di kiri/kanan isi tabel (header & saldo navy sudah membentuk bingkai) */
+        .ledger tbody tr td:first-child { border-left: 0.75px solid #e2e8f0; }
+        .ledger tbody tr td:last-child { border-right: 0.75px solid #e2e8f0; }
+        .ledger tbody tr.balance > td { border-left: none; border-right: none; }
         .ledger .num { text-align: right; white-space: nowrap; }
         .ledger .no { text-align: center; color: #94a3b8; }
         .empty { color: #cbd5e1; }
@@ -63,7 +67,7 @@
         .ledger tr.total td.out { color: #dc2626; }
         .ledger tr.balance > td { background: #0f2a4a; color: #fff; padding: 10px 8px; border-bottom: none; border-bottom-left-radius: 9px; border-bottom-right-radius: 9px; }
         .balance-inner { width: 100%; border-collapse: collapse; }
-        .balance-inner td { padding: 0; border: none; vertical-align: middle; }
+        .balance-inner td { padding: 0; border: none !important; vertical-align: middle; }
         .balance-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; color: #cbd5e1; }
         .balance-value { font-size: 14px; font-weight: bold; color: #4ade80; }          /* hijau terang: kontras di atas navy */
         .negative .balance-value { color: #fca5a5; }                                     /* merah terang: kontras di atas navy */
