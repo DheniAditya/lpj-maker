@@ -131,8 +131,8 @@
         <table class="main-table">
             <thead>
                 <tr>
-                    <th style="width: 12%;">Tanggal</th>
-                    <th style="width: 40%;">Keterangan</th>
+                    <th style="width: 7%;">No</th>
+                    <th style="width: 45%;">Keterangan</th>
                     <th style="width: 16%;">Nota</th>
                     <th style="width: 18%;">Debit</th>
                     <th style="width: 18%;">Kredit</th>
@@ -141,7 +141,7 @@
             <tbody>
                 @forelse ($report->entries as $entry)
                 <tr>
-                    <td class="text-center">{{ $entry->created_at->format('d/m/Y') }}</td>
+                    <td class="text-center">{{ $loop->iteration }}</td>
                     <td>{{ $entry->description }}</td>
                     <td class="text-center">
                         <span style="color: #64748b; font-size: 10px;">

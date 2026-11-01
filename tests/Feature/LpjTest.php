@@ -242,3 +242,18 @@ test('link share yang dimatikan tidak bisa dibuka', function () {
 
     $this->get(route('lpj.share', $report->share_token))->assertNotFound();
 });
+
+test('tabel transaksi memakai nomor urut, bukan tanggal', function () {
+    $report = makeReport();
+    $report->entries()->create(['type' => 'debit', 'description' => 'Dana awal', 'amount' => 1000, 'created_at' => '2026-10-20']);
+    $report->entries()->create(['type' => 'credit', 'description' => 'Belanja', 'amount' => 500, 'created_at' => '2026-10-21']);
+
+    $html = $this->withSession(asGuestCreator($report))->get(route('lpj.show', $report->slug))->assertOk()->getContent();
+    expect($html)->not->toContain('20/10/26')->not->toContain('21/10/26');
+
+    $report->load('entries.images');
+    $pdfHtml = view('lpj.pdf_template', compact('report'))->render();
+    expect($pdfHtml)->toContain('>No</th>')->not->toContain('20/10/2026')
+        ->and(preg_match_all('/<td class="text-center">(\d+)<\/td>/', $pdfHtml, $m))->toBe(2)
+        ->and($m[1])->toBe(['1', '2']);
+});
