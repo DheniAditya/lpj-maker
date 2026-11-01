@@ -1,3 +1,6 @@
+@php
+    $canEdit = Gate::allows('update', $report);
+@endphp
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
         <h3 class="font-bold text-slate-700">Riwayat Transaksi</h3>
@@ -8,7 +11,7 @@
         <table class="min-w-full divide-y divide-slate-100">
             <thead class="bg-slate-50">
                 <tr>
-                    @foreach (['No' => 'text-center', 'Keterangan' => 'text-left', 'Nota' => 'text-center', 'Nominal' => 'text-right', 'Aksi' => 'text-center'] as $heading => $align)
+                    @foreach (array_filter(['No' => 'text-center', 'Keterangan' => 'text-left', 'Nota' => 'text-center', 'Nominal' => 'text-right', 'Aksi' => $canEdit ? 'text-center' : null]) as $heading => $align)
                         <th class="p-4 {{ $align }} text-xs font-bold text-slate-400 uppercase tracking-wider">{{ $heading }}</th>
                     @endforeach
                 </tr>
@@ -40,8 +43,9 @@
                                 <span class="text-rose-600 bg-rose-50 px-2 py-1 rounded font-bold">- @angka($entry->amount)</span>
                             @endif
                         </td>
+                        @if ($canEdit)
                         <td class="p-4">
-                            <div class="flex items-center justify-center gap-2">
+                            <div class="flex items-center justify-center gap-1">
                                 <button type="button" class="btn-edit-entry p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition" title="Edit Transaksi"
                                     data-entry="{{ json_encode($editPayload) }}"
                                     data-url="{{ route('lpj.entry.update', $entry) }}">
@@ -53,10 +57,11 @@
                                 </button>
                             </div>
                         </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="p-8 text-center text-slate-400">Belum ada transaksi</td>
+                        <td colspan="{{ $canEdit ? 5 : 4 }}" class="p-8 text-center text-slate-400">Belum ada transaksi</td>
                     </tr>
                 @endforelse
             </tbody>

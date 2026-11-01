@@ -42,4 +42,22 @@ class LpjShareController extends Controller
 
         return $this->success('Pengaturan berbagi diperbarui.', ['share_token' => $report->share_token]);
     }
+
+    /**
+     * Batalkan link share: link dimatikan dan diganti token baru, sehingga link lama
+     * (dan semua orang yang pernah membukanya) langsung kehilangan akses.
+     */
+    public function revoke(ExpenseReport $report): JsonResponse
+    {
+        Gate::authorize('share', $report);
+
+        $report->update([
+            'is_shared' => false,
+            'share_token' => Str::random(32),
+        ]);
+
+        return $this->success('Link share dibatalkan. Link lama sudah tidak bisa dibuka.', [
+            'share_token' => $report->share_token,
+        ]);
+    }
 }

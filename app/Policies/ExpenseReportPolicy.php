@@ -22,6 +22,12 @@ class ExpenseReportPolicy
 
     public const SESSION_SHARE_TOKENS = 'accessed_share_tokens';
 
+    /** Admin boleh melihat, mengubah, dan menghapus semua LPJ (kecuali mengatur share milik orang lain). */
+    public function before(?User $user, string $ability): ?bool
+    {
+        return $user?->isAdmin() && $ability !== 'share' ? true : null;
+    }
+
     public function view(?User $user, ExpenseReport $report): Response
     {
         if ($this->isCreator($user, $report) || $this->hasOpenedShareLink($report)) {

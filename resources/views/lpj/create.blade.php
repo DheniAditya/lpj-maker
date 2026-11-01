@@ -50,6 +50,10 @@
 
             </div>
 
+            @if ($errors->any())
+                <p class="mt-4 text-sm text-rose-600 bg-rose-50 rounded-xl px-4 py-3">{{ $errors->first() }}</p>
+            @endif
+
             <div class="mt-8 space-y-3">
                 <button type="submit" 
                         class="w-full py-4 text-lg font-bold text-white bg-[#4A5D7B] rounded-2xl 

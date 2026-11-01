@@ -4,6 +4,7 @@ use App\Models\ExpenseEntry;
 use App\Models\ExpenseReport;
 use App\Models\User;
 use App\Policies\ExpenseReportPolicy;
+use App\Support\SignatureImage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,6 +15,23 @@ beforeEach(function () {
 function makeReport(array $attributes = []): ExpenseReport
 {
     return ExpenseReport::create($attributes + ['title' => 'Lomba Robotik', 'creator_name' => 'Deni']);
+}
+
+/** Gambar tanda tangan palsu: garis gelap di atas latar putih (atau transparan). */
+function signatureImage(bool $transparent = false, string $format = 'png'): string
+{
+    $image = imagecreatetruecolor(400, 200);
+    imagesavealpha($image, true);
+    imagealphablending($image, false);
+    imagefill($image, 0, 0, $transparent ? imagecolorallocatealpha($image, 0, 0, 0, 127) : imagecolorallocate($image, 250, 250, 245));
+    imagealphablending($image, true);
+    imagesetthickness($image, 6);
+    imageline($image, 80, 120, 320, 80, imagecolorallocate($image, 20, 20, 60));
+
+    ob_start();
+    $format === 'jpg' ? imagejpeg($image, null, 90) : imagepng($image);
+
+    return ob_get_clean();
 }
 
 function asGuestCreator(ExpenseReport $report): array
@@ -183,6 +201,7 @@ test('download PDF menghasilkan file PDF', function () {
     $entry = $report->entries()->create(['type' => 'credit', 'description' => 'Nota', 'amount' => 5000]);
     $entry->attachImages([UploadedFile::fake()->image('nota.png')]);
 
+    $report->storeSignature(SignatureImage::process(signatureImage()));
     $response = $this->withSession(asGuestCreator($report))->get(route('lpj.download', $report->slug));
 
     $response->assertOk()->assertHeader('content-type', 'application/pdf');

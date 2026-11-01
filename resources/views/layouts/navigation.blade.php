@@ -33,6 +33,10 @@ class="sticky top-0 z-50 w-full transition-all  shadow-sm
                         </x-slot>
 
                         <x-slot name="content">
+                            <x-dropdown-link :href="route('dashboard')">Dashboard</x-dropdown-link>
+                            @if (Auth::user()->isAdmin())
+                                <x-dropdown-link :href="route('admin.users.index')">Panel Admin</x-dropdown-link>
+                            @endif
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Edit Account') }}
                             </x-dropdown-link>
@@ -77,6 +81,11 @@ class="sticky top-0 z-50 w-full transition-all  shadow-sm
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
+                @if (Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')">
+                        Panel Admin
+                    </x-responsive-nav-link>
+                @endif
             @endauth
             
             <x-responsive-nav-link :href="route('lpj.create')" :active="request()->routeIs('lpj.create')">
