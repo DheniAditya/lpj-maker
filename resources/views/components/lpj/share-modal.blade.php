@@ -3,25 +3,16 @@
     @click.self="close()" class="fixed inset-0 z-[99] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-sm">
 
     <div x-show="isOpen" x-transition
-        class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden border border-slate-200 max-h-[92vh] overflow-y-auto">
+        class="relative bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-        {{-- Header --}}
-        <div class="flex items-start justify-between gap-4 p-5 pb-4 border-b border-slate-100">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-10 h-10 shrink-0 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                    <x-lpj.icon name="share" />
-                </div>
-                <div class="min-w-0">
-                    <h3 class="font-bold text-slate-800 leading-tight">Bagikan LPJ</h3>
-                    <p class="text-xs text-slate-500 truncate" x-text="title"></p>
-                </div>
-            </div>
-            <button type="button" @click="close()" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600" title="Tutup">
-                <x-lpj.icon name="close" />
+        <div class="flex justify-end px-4 pt-4">
+            <button type="button" @click="close()" title="Tutup"
+                class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-500 hover:text-white transition">
+                <x-lpj.icon name="close" class="w-5 h-5" />
             </button>
         </div>
 
-        <div class="p-5 space-y-5">
+        <div class="px-5 pb-5 pt-2 space-y-5">
             {{-- Status link --}}
             <div class="flex items-center justify-between gap-4 p-4 rounded-xl border"
                 :class="isShared ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'">
@@ -61,12 +52,11 @@
                     </div>
 
                     {{-- Link --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-2">Link</label>
+                    <div class="space-y-2">
                         <div class="flex gap-2">
                             <div class="relative flex-1 min-w-0">
                                 <x-lpj.icon name="link" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                                <input x-ref="linkInput" type="text" readonly :value="shareUrl" @focus="$el.select()"
+                                <input x-ref="linkInput" type="text" readonly :value="shareUrl" @focus="$el.select()" aria-label="Link share"
                                     class="w-full bg-slate-50 border-slate-200 text-slate-600 text-sm rounded-xl py-2.5 pl-9 pr-3 focus:outline-none focus:border-blue-400 focus:ring-0">
                             </div>
                             <button type="button" @click="copyLink()"
@@ -78,16 +68,10 @@
                             </button>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 mt-2">
-                            <a :href="whatsappUrl" target="_blank" rel="noopener"
-                                class="inline-flex items-center justify-center gap-1.5 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-                                <x-lpj.icon name="chat" class="w-4 h-4" /> Kirim WhatsApp
-                            </a>
-                            <a :href="shareUrl" target="_blank" rel="noopener"
-                                class="inline-flex items-center justify-center gap-1.5 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-                                <x-lpj.icon name="external" class="w-4 h-4" /> Buka link
-                            </a>
-                        </div>
+                        <a :href="whatsappUrl" target="_blank" rel="noopener"
+                            class="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                            <x-lpj.icon name="chat" class="w-4 h-4" /> Kirim WhatsApp
+                        </a>
                     </div>
 
                     {{-- Batalkan --}}
@@ -100,12 +84,6 @@
                     </div>
                 </div>
             </template>
-        </div>
-
-        <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-            <span class="text-xs text-slate-400" x-show="saving">Menyimpan...</span>
-            <span class="text-xs text-slate-400" x-show="!saving">Perubahan tersimpan otomatis</span>
-            <button type="button" @click="close()" class="px-4 py-2 rounded-xl bg-slate-800 text-white text-sm font-bold hover:bg-slate-700">Selesai</button>
         </div>
     </div>
 </div>

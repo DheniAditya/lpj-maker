@@ -49,7 +49,7 @@
     ];
 @endphp
 
-<svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<svg {{ $attributes->merge(['class' => $attributes->has('class') ? '' : 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
     @foreach ((array) $icons[$name] as $path)
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="{{ $strokeWidth }}" d="{{ $path }}" />
     @endforeach
