@@ -89,32 +89,32 @@
 
                             {{-- Status & aksi: dipisah dari info saldo agar tidak bertabrakan --}}
                             <div class="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-2.5 border-t border-slate-100 bg-slate-50/70">
-                                <div class="flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                                <div class="flex flex-wrap gap-1.5 text-[10px] font-semibold leading-none">
                                     @if ($report->is_shared)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                                            <x-lpj.icon name="link" class="w-3 h-3" /> Dibagikan · {{ $report->share_role === 'editor' ? 'Editor' : 'Pelihat' }}
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                                            <x-lpj.icon name="link" class="w-3.5 h-3.5" /> Dibagikan · {{ $report->share_role === 'editor' ? 'Editor' : 'Pelihat' }}
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">
-                                            <x-lpj.icon name="lock" class="w-3 h-3" /> Privat
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-200 text-slate-600">
+                                            <x-lpj.icon name="lock" class="w-3.5 h-3.5" /> Privat
                                         </span>
                                     @endif
                                     @if ($report->signature_path)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                                            <x-lpj.icon name="signature" class="w-3 h-3" /> Sudah TTD
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                                            <x-lpj.icon name="signature" class="w-3.5 h-3.5" /> Sudah TTD
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
-                                            <x-lpj.icon name="signature" class="w-3 h-3" /> Belum TTD
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-100 text-amber-700">
+                                            <x-lpj.icon name="signature" class="w-3.5 h-3.5" /> Belum TTD
                                         </span>
                                     @endif
                                 </div>
 
                                 <div class="flex items-center gap-1">
-                                    <x-lpj.share-button :report="$report" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-blue-700 hover:bg-blue-50" />
-                                    <button type="button" class="btn-delete inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition"
+                                    <x-lpj.share-button :report="$report" icon-class="w-3.5 h-3.5" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-blue-700 hover:bg-blue-50" />
+                                    <button type="button" class="btn-delete inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition"
                                         data-url="{{ route('lpj.destroy', $report) }}" data-row="#row-{{ $report->id }}" data-title="{{ $report->title }}">
-                                        <x-lpj.icon name="trash" class="w-4 h-4" /> Hapus
+                                        <x-lpj.icon name="trash" class="w-3.5 h-3.5" /> Hapus
                                     </button>
                                 </div>
                             </div>
