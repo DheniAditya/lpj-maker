@@ -1,21 +1,20 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request): View
     {
-        // Ambil user yang sedang login
-        $user = Auth::user();
+        $lpjHistory = $request->user()
+            ->expenseReports()
+            ->withTotals()
+            ->latest('updated_at')
+            ->get();
 
-        // Ambil history LPJ milik user tsb, urutkan dari yang terbaru
-        $lpjHistory = $user->expenseReports()
-                           ->orderBy('updated_at', 'desc')
-                           ->get();
-
-        // Kirim data history ke view
         return view('dashboard', compact('lpjHistory'));
     }
 }
