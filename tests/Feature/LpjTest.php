@@ -275,9 +275,13 @@ test('tabel & PDF memakai nomor urut sesuai urutan input, tanpa tanggal', functi
     $report->load('entries.images');
     $pdfHtml = view('lpj.pdf_template', compact('report'))->render();
     expect($pdfHtml)->toContain('>No</th>')->not->toContain('20/10/2026')
-        ->and(preg_match_all('/<td class="text-center">(\d+)<\/td>/', $pdfHtml, $m))->toBe(2)
+        ->and(preg_match_all('/<td class="no">(\d+)<\/td>/', $pdfHtml, $m))->toBe(2)
         ->and($m[1])->toBe(['1', '2'])
-        ->and($pdfHtml)->toContain('<span class="nota-title">2. Belanja</span>');
+        ->and($pdfHtml)->toContain('<td class="nota-no">2</td><td class="nota-desc">Belanja</td>')
+        ->and($pdfHtml)->toContain('Tidak terlampir')
+        ->and($pdfHtml)->toContain('>Terlampir<')
+        ->and($pdfHtml)->not->toContain('Jumlah transaksi')
+        ->and($pdfHtml)->not->toContain('Nomor lampiran sesuai');
 });
 
 test('tanggal tidak bisa diubah lewat edit transaksi', function () {
@@ -290,4 +294,17 @@ test('tanggal tidak bisa diubah lewat edit transaksi', function () {
     ])->assertOk();
 
     expect($entry->fresh()->created_at->toDateTimeString())->toBe($original);
+});
+
+test('PDF: saldo minus ditandai merah dengan format -Rp, kredit berwarna merah', function () {
+    $report = makeReport();
+    $report->entries()->create(['type' => 'credit', 'description' => 'Bensin', 'amount' => 600000]);
+    $report->load('entries.images');
+
+    $html = view('lpj.pdf_template', compact('report'))->render();
+
+    expect($html)->toContain('balance negative')
+        ->toContain('-Rp 600.000')
+        ->toContain('Pengeluaran melebihi dana masuk')
+        ->toContain('<td class="num out">600.000</td>');
 });
