@@ -55,9 +55,9 @@
             &copy; {{ date('Y') }} {{ config('app.name') }}. <span class="opacity-70">Professional Reporting System.</span>
         </footer>
     
-        <!-- fitur tanpa reload dengan AJAX -->
+        {{-- jQuery & SweetAlert dipakai oleh script halaman (AJAX tanpa reload) --}}
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        @stack('scripts')
     </body>
 </html>

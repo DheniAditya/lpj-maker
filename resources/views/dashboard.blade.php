@@ -52,7 +52,7 @@
                             <p class="text-xs text-slate-500">Daftar semua LPJ yang pernah Anda buat</p>
                         </div>
                         <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
-                            {{ count($lpjHistory) }} File
+                            {{ $lpjHistory->count() }} File
                         </span>
                     </div>
                     
@@ -60,7 +60,6 @@
                     <div class="p-6">
                         <div class="grid gap-4">
                             @forelse ($lpjHistory as $report)
-                                {{-- PERUBAHAN 1: Tambahkan ID unik di sini --}}
                                 <div id="row-{{ $report->id }}" class="group relative rounded-xl border border-slate-200 hover:border-[#6B81A7] hover:bg-blue-50/30 transition-all duration-200">
                                     
                                     <a href="{{ route('lpj.show', $report->slug) }}" class="block p-5 pr-16 w-full h-full">
@@ -89,7 +88,7 @@
                                             <div class="text-right">
                                                 <p class="text-xs text-slate-400 uppercase font-bold mb-1">Sisa Saldo</p>
                                                 <span class="font-mono font-bold text-lg {{ $report->balance >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
-                                                    Rp {{ number_format($report->balance, 0, ',', '.') }}
+                                                    @rupiah($report->balance)
                                                 </span>
                                             </div>
                                         </div>
@@ -97,24 +96,25 @@
 
                                     {{-- Tombol Aksi (Share & Delete) --}}
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex gap-2">
-                                        <button type="button" 
-    class="btn-share-trigger p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-    data-id="{{ $report->id }}"
-    data-title="{{ $report->title }}"
-    data-token="{{ $report->share_token }}"
-    data-role="{{ $report->share_role ?? 'viewer' }}"
-    data-shared="{{ $report->is_shared ? 'true' : 'false' }}"
-    title="Bagikan Link">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <button type="button"
+                                            class="btn-share-trigger p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                            data-url="{{ route('lpj.share.update', $report) }}"
+                                            data-title="{{ $report->title }}"
+                                            data-token="{{ $report->share_token }}"
+                                            data-role="{{ $report->share_role ?? 'viewer' }}"
+                                            data-shared="{{ $report->is_shared ? 'true' : 'false' }}"
+                                            title="Bagikan Link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
                                                 <polyline points="16 6 12 2 8 6"></polyline>
                                                 <line x1="12" y1="2" x2="12" y2="15"></line>
                                             </svg>
-</button>
+                                        </button>
 
                                         <button type="button" 
                                                 class="btn-delete p-2 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors"
-                                                data-id="{{ $report->id }}" 
+                                                data-url="{{ route('lpj.destroy', $report) }}"
+                                                data-row="#row-{{ $report->id }}"
                                                 data-title="{{ $report->title }}"
                                                 title="Hapus Laporan">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -141,8 +141,8 @@
         </div>
     </div>
 
-    <div x-data="shareModal()" 
-     x-show="isOpen" 
+    <div x-data="shareModal()"
+     x-show="isOpen"
      @open-share-modal.window="open($event.detail)"
      class="fixed inset-0 z-[99] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
      x-cloak>
@@ -193,146 +193,89 @@
     </div>
 </div>
 
-</x-app-layout>
-<script>
-    $(document).ready(function() {
-        
-        // Setup Token Keamanan (Wajib untuk Laravel)
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
 
-        // Aksi ketika tombol hapus diklik
-        $('.btn-delete').click(function(e) {
-            e.preventDefault();
+    @push('scripts')
+        <script>
+            $(function () {
+                $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
 
-            // Ambil data dari tombol yang diklik
-            let button = $(this);
-            let id = button.data('id');
-            let title = button.data('title');
-            
-            // Tampilkan SweetAlert
-            Swal.fire({
-                title: 'Hapus Laporan?',
-                text: "Laporan '" + title + "' akan dihapus permanen.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#94a3b8',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    
-                    // Panggil Controller via AJAX (Tanpa Reload)
-                    $.ajax({
-                        type: "DELETE",
-                        url: "/lpj/" + id, // Pastikan route ini sesuai
-                        success: function(response) {
-                            
-                            // Animasi Baris Menghilang (Fade Out)
-                            $('#row-' + id).fadeOut(600, function() {
-                                $(this).remove(); 
-                            });
+                $('.btn-delete').on('click', function (e) {
+                    e.preventDefault();
+                    const $btn = $(this);
 
-                            // Pesan Sukses Kecil di Pojok (Toast)
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
-                            
-                            Toast.fire({
-                                icon: 'success',
-                                title: 'Berhasil dihapus'
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire('Gagal!', 'Terjadi kesalahan sistem.', 'error');
-                        }
+                    Swal.fire({
+                        title: 'Hapus Laporan?',
+                        text: `Laporan '${$btn.data('title')}' akan dihapus permanen.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#94a3b8',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                    }).then(({ isConfirmed }) => {
+                        if (!isConfirmed) return;
+
+                        $.ajax({ type: 'DELETE', url: $btn.data('url') })
+                            .done(() => {
+                                $($btn.data('row')).fadeOut(600, function () { $(this).remove(); });
+                                Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 })
+                                    .fire({ icon: 'success', title: 'Berhasil dihapus' });
+                            })
+                            .fail(() => Swal.fire('Gagal!', 'Terjadi kesalahan sistem.', 'error'));
                     });
-                }
-            })
-        });
-        $('.btn-share-trigger').click(function() {
-            let d = $(this).data();
-            // Panggil fungsi openShareModal dengan data dari atribut
-            openShareModal(d.id, d.title, d.token, d.role, d.shared);
-        });
-    });
+                });
 
-    function openShareModal(id, title, token, role, isShared) {
-    window.dispatchEvent(new CustomEvent('open-share-modal', { 
-        detail: { id, title, token, role, isShared } 
-    }));
-}
+                $('.btn-share-trigger').on('click', function () {
+                    // jQuery .data() mengubah "true"/"false" menjadi boolean
+                    window.dispatchEvent(new CustomEvent('open-share-modal', { detail: $(this).data() }));
+                });
+            });
 
-function shareModal() {
-    return {
-        isOpen: false,
-        id: null,
-        title: '',
-        token: '',
-        role: 'viewer',
-        isShared: false,
-        copied: false,
-        shareUrl: '',
+            function shareModal() {
+                return {
+                    isOpen: false,
+                    url: null,
+                    title: '',
+                    token: '',
+                    role: 'viewer',
+                    isShared: false,
+                    copied: false,
 
-        open(data) {
-            this.id = data.id;
-            this.title = data.title;
-            this.token = data.token;
-            this.role = data.role || 'viewer';
-            this.isShared = data.isShared;
-            this.updateUrl();
-            this.isOpen = true;
-        },
+                    get shareUrl() {
+                        return `${window.location.origin}/lpj/share/${this.token}`;
+                    },
 
-        updateUrl() {
-            this.shareUrl = `${window.location.origin}/lpj/share/${this.token}`;
-        },
+                    open({ url, title, token, role, shared }) {
+                        Object.assign(this, { url, title, token, role: role || 'viewer', isShared: shared === true, isOpen: true });
+                    },
 
-        async toggleSharing() {
-            this.isShared = !this.isShared;
-            await this.saveToServer();
-        },
+                    toggleSharing() {
+                        this.isShared = !this.isShared;
+                        this.save();
+                    },
 
-        async updateRole(newRole) {
-            this.role = newRole;
-            await this.saveToServer();
-        },
+                    updateRole(role) {
+                        this.role = role;
+                        this.save();
+                    },
 
-        async saveToServer() {
-    try {
-        const response = await $.ajax({
-            type: "POST",
-            url: `/lpj/${this.id}/toggle-share`,
-            data: {
-                is_shared: this.isShared,
-                share_role: this.role
+                    async save() {
+                        try {
+                            const res = await $.post(this.url, { is_shared: this.isShared, share_role: this.role });
+                            if (res.share_token) this.token = res.share_token;
+                        } catch (error) {
+                            console.error(error);
+                            alert('Gagal memperbarui pengaturan sharing.');
+                        }
+                    },
+
+                    copyLink() {
+                        navigator.clipboard.writeText(this.shareUrl);
+                        this.copied = true;
+                        setTimeout(() => (this.copied = false), 2000);
+                    },
+                };
             }
-        });
-
-        // POIN PENTING: Update token yang dikirim dari controller
-        if (response.share_token) {
-            this.token = response.share_token;
-            this.updateUrl(); // Update link yang tampil di input
-        }
-    } catch (error) {
-        console.error(error);
-        alert("Gagal memperbarui pengaturan sharing.");
-    }
-},
-
-        copyLink() {
-            navigator.clipboard.writeText(this.shareUrl);
-            this.copied = true;
-            setTimeout(() => this.copied = false, 2000);
-        }
-    }
-}
-
-</script>
+        </script>
+    @endpush
+</x-app-layout>
