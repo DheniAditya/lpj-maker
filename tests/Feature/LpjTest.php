@@ -296,7 +296,7 @@ test('tanggal tidak bisa diubah lewat edit transaksi', function () {
     expect($entry->fresh()->created_at->toDateTimeString())->toBe($original);
 });
 
-test('PDF: saldo minus ditandai merah dengan format −Rp, kredit berwarna merah', function () {
+test('PDF: saldo minus ditandai merah dengan format -Rp, kredit berwarna merah', function () {
     $report = makeReport();
     $report->entries()->create(['type' => 'credit', 'description' => 'Bensin', 'amount' => 600000]);
     $report->load('entries.images');
@@ -304,7 +304,7 @@ test('PDF: saldo minus ditandai merah dengan format −Rp, kredit berwarna merah
     $html = view('lpj.pdf_template', compact('report'))->render();
 
     expect($html)->toContain('balance negative')
-        ->toContain('−Rp 600.000')
+        ->toContain('-Rp 600.000')
         ->toContain('Pengeluaran melebihi dana masuk')
         ->toContain('<td class="num out">600.000</td>');
 });

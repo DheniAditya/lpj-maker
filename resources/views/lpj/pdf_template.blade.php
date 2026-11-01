@@ -1,8 +1,8 @@
 @php
     /*
      | Desain PDF LPJ
-     | - Tipografi: seluruhnya sans-serif DejaVu (angka lebar sama → rapi rata kanan).
-     |   Hierarki ukuran: judul 18 → label 7.5 (kapital, renggang) → isi 9.5 → total 10 → saldo 13.
+     | - Tipografi: seluruhnya serif (Times) agar formal; angka rata kanan.
+     |   Hierarki ukuran: judul 20 → label 8 (kapital, renggang) → isi 10.5 → total 10.5 tebal → saldo 14.
      | - Warna: navy sebagai identitas (header tabel, baris saldo, aksen), hijau = debit (masuk),
      |   merah = kredit (keluar). Selebihnya putih & abu-abu netral.
      | - Sudut membulat (6–10px) agar terkesan modern dan tidak kaku.
@@ -11,7 +11,7 @@
     $printedAt = now()->day.' '.$months[now()->month].' '.now()->year;
 
     $number = fn ($value) => number_format(abs((float) $value), 0, ',', '.');
-    $money = fn ($value) => ((float) $value < 0 ? '−' : '').'Rp '.number_format(abs((float) $value), 0, ',', '.');
+    $money = fn ($value) => ((float) $value < 0 ? '-' : '').'Rp '.number_format(abs((float) $value), 0, ',', '.');
     $isNegative = $report->balance < 0;
 @endphp
 <!DOCTYPE html>
@@ -23,7 +23,7 @@
         @page { margin: 2.2cm 1.8cm; size: A4 portrait; }
 
         /* ---------- Dasar ---------- */
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 9.5px; color: #334155; line-height: 1.45; }
+        body { font-family: 'Times New Roman', Times, serif; font-size: 10.5px; color: #334155; line-height: 1.45; }
         .muted { color: #94a3b8; }
         .right { text-align: right; }
         .center { text-align: center; }
@@ -31,19 +31,19 @@
         .out { color: #dc2626; }  /* kredit: merah */
 
         /* ---------- Kop ---------- */
-        .eyebrow { font-size: 7.5px; letter-spacing: 2px; text-transform: uppercase; color: #64748b; text-align: center; }
-        .title { font-size: 18px; font-weight: bold; color: #0f2a4a; text-align: center; margin: 6px 0 4px; }
+        .eyebrow { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #64748b; text-align: center; }
+        .title { font-size: 20px; font-weight: bold; color: #0f2a4a; text-align: center; margin: 6px 0 4px; }
         .accent-rule { width: 48px; height: 3px; background: #0f2a4a; border-radius: 2px; margin: 8px auto 14px; }
 
         .meta { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
         .meta td { width: 50%; padding: 8px 12px; vertical-align: top; }
-        .meta-label { display: block; font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8; margin-bottom: 2px; }
-        .meta-value { font-size: 9.5px; font-weight: bold; color: #1e293b; }
+        .meta-label { display: block; font-size: 7.5px; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8; margin-bottom: 2px; }
+        .meta-value { font-size: 10.5px; font-weight: bold; color: #1e293b; }
 
         /* ---------- Tabel (sudut membulat: border-collapse separate) ---------- */
         .ledger { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; border: 1px solid #0f2a4a; border-radius: 10px; }
         .ledger th {
-            background: #0f2a4a; color: #e2e8f0; font-size: 7.5px; font-weight: bold; letter-spacing: 1px;
+            background: #0f2a4a; color: #e2e8f0; font-size: 8px; font-weight: bold; letter-spacing: 1px;
             text-transform: uppercase; padding: 9px 8px; text-align: left;
         }
         .ledger thead th:first-child { border-top-left-radius: 9px; }
@@ -55,8 +55,8 @@
         .ledger .num { text-align: right; white-space: nowrap; }
         .ledger .no { text-align: center; color: #94a3b8; }
         .empty { color: #cbd5e1; }
-        .note-yes { color: #475569; font-size: 8.5px; }
-        .note-no { color: #94a3b8; font-size: 8.5px; }
+        .note-yes { color: #475569; font-size: 9.5px; }
+        .note-no { color: #94a3b8; font-size: 9.5px; }
 
         .ledger tr.total td { background: #f1f5f9; border-bottom: none; font-weight: bold; color: #1e293b; }
         .ledger tr.total td.in { color: #15803d; }
@@ -64,35 +64,35 @@
         .ledger tr.balance > td { background: #0f2a4a; color: #fff; padding: 10px 8px; border-bottom: none; border-bottom-left-radius: 9px; border-bottom-right-radius: 9px; }
         .balance-inner { width: 100%; border-collapse: collapse; }
         .balance-inner td { padding: 0; border: none; vertical-align: middle; }
-        .balance-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; color: #cbd5e1; }
-        .balance-value { font-size: 13px; font-weight: bold; color: #4ade80; }          /* hijau terang: kontras di atas navy */
+        .balance-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; color: #cbd5e1; }
+        .balance-value { font-size: 14px; font-weight: bold; color: #4ade80; }          /* hijau terang: kontras di atas navy */
         .negative .balance-value { color: #fca5a5; }                                     /* merah terang: kontras di atas navy */
-        .balance-hint { display: block; font-size: 7.5px; font-weight: normal; color: #fca5a5; letter-spacing: 0; text-transform: none; margin-top: 2px; }
+        .balance-hint { display: block; font-size: 8.5px; font-weight: normal; color: #fca5a5; letter-spacing: 0; text-transform: none; margin-top: 2px; }
 
         /* ---------- Tanda tangan ---------- */
         .signature { width: 100%; margin-top: 34px; }
         .signature td { vertical-align: top; }
         .sign-box { text-align: center; }
-        .sign-place { font-size: 9.5px; color: #475569; }
+        .sign-place { font-size: 10.5px; color: #475569; }
         .sign-image-box { height: 64px; margin: 4px 0; }
         .sign-image { max-height: 64px; max-width: 170px; }
         .sign-empty { height: 64px; }
-        .sign-name { display: inline-block; min-width: 150px; padding-top: 3px; border-top: 1px solid #334155; font-weight: bold; color: #1e293b; font-size: 10px; }
-        .sign-role { font-size: 8px; color: #94a3b8; }
+        .sign-name { display: inline-block; min-width: 150px; padding-top: 3px; border-top: 1px solid #334155; font-weight: bold; color: #1e293b; font-size: 11px; }
+        .sign-role { font-size: 9px; color: #94a3b8; }
 
         /* ---------- Lampiran nota ---------- */
         .page-break { page-break-after: always; }
-        .section-title { font-size: 12px; font-weight: bold; color: #0f2a4a; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e2e8f0; }
+        .section-title { font-size: 14px; font-weight: bold; color: #0f2a4a; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e2e8f0; }
         .gallery { width: 100%; border-collapse: separate; border-spacing: 8px; margin: 0 -8px; }
         .gallery > tr > td, .gallery td.cell { width: 50%; vertical-align: top; }
         .nota { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center; }
         .nota-head { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
         .nota-head td { vertical-align: middle; padding: 0; text-align: left; }
-        .nota-no { width: 22px; height: 18px; background: #0f2a4a; color: #fff; border-radius: 5px; font-size: 8px; font-weight: bold; text-align: center !important; }
-        .nota-desc { padding-left: 7px !important; font-size: 9px; font-weight: bold; color: #1e293b; }
+        .nota-no { width: 22px; height: 18px; background: #0f2a4a; color: #fff; border-radius: 5px; font-size: 9px; font-weight: bold; text-align: center !important; }
+        .nota-desc { padding-left: 7px !important; font-size: 10.5px; font-weight: bold; color: #1e293b; }
         .nota-image { max-width: 100%; max-height: 240px; border-radius: 6px; }
         .nota-missing { border: 1px dashed #cbd5e1; border-radius: 6px; padding: 30px 10px; color: #94a3b8; font-size: 8.5px; }
-        .nota-foot { margin-top: 8px; padding-top: 6px; border-top: 1px solid #f1f5f9; font-size: 9px; text-align: right; }
+        .nota-foot { margin-top: 8px; padding-top: 6px; border-top: 1px solid #f1f5f9; font-size: 10px; text-align: right; }
     </style>
 </head>
 <body>
