@@ -109,6 +109,9 @@
         /* Signature */
         .signature-section { margin-top: 30px; }
         .signature-line { border-bottom: 1px solid #334155; display: inline-block; font-weight: bold; min-width: 150px; padding-top: 50px; }
+        .signature-image-box { height: 70px; margin-top: 4px; }
+        .signature-image { max-height: 70px; max-width: 180px; }
+        .signature-line.signed { padding-top: 0; }
 
         /* Gallery/Nota */
         .page-break { page-break-after: always; }
@@ -180,7 +183,12 @@
                     <td style="width: 65%;"></td>
                     <td style="width: 35%; text-align: center;">
                         <span>Hormat Kami,</span><br>
-                        <div class="signature-line">{{ $report->creator_name }}</div>
+                        @if ($signature = $report->signatureDataUri())
+                            <div class="signature-image-box"><img src="{{ $signature }}" class="signature-image"></div>
+                            <div class="signature-line signed">{{ $report->creator_name }}</div>
+                        @else
+                            <div class="signature-line">{{ $report->creator_name }}</div>
+                        @endif
                     </td>
                 </tr>
             </table>
@@ -201,7 +209,9 @@
                 @foreach ($receipts->chunk(2) as $row)
                     <tr>
                         @foreach ($row as ['no' => $no, 'entry' => $entry, 'image' => $image])
-                            @php($dataUri = $image->toDataUri())
+                            @php
+                                $dataUri = $image->toDataUri();
+                            @endphp
                             <td class="gallery-td">
                                 <div class="nota-box">
                                     <span class="nota-title">{{ $no }}. {{ $entry->description }}</span>

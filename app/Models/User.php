@@ -29,6 +29,9 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    /** Batas jumlah arsip LPJ per akun (admin tidak dibatasi). */
+    public const MAX_REPORTS = 15;
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -43,12 +46,31 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'is_admin' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Hapus laporan satu per satu agar file nota & tanda tangan ikut terhapus.
+        static::deleting(function (User $user) {
+            $user->expenseReports->each->delete();
+        });
     }
 
     public function expenseReports(): HasMany
     {
         return $this->hasMany(ExpenseReport::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
+
+    public function hasReachedReportLimit(): bool
+    {
+        return ! $this->isAdmin() && $this->expenseReports()->count() >= self::MAX_REPORTS;
     }
 }

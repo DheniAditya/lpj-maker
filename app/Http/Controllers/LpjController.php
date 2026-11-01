@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Lpj\StoreReportRequest;
 use App\Models\ExpenseReport;
+use App\Models\User;
 use App\Policies\ExpenseReportPolicy;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +27,12 @@ class LpjController extends Controller
 
     public function store(StoreReportRequest $request): RedirectResponse
     {
+        if ($request->user()?->hasReachedReportLimit()) {
+            return back()->withInput()->withErrors([
+                'title' => 'Arsip LPJ sudah mencapai batas '.User::MAX_REPORTS.'. Hapus LPJ lama di dashboard untuk membuat yang baru.',
+            ]);
+        }
+
         $report = ExpenseReport::create($request->validated() + [
             'user_id' => $request->user()?->id,
         ]);
@@ -70,6 +77,11 @@ class LpjController extends Controller
     public function downloadPdf(ExpenseReport $report): Response
     {
         Gate::authorize('view', $report);
+
+        if (! $report->hasSignature()) {
+            return redirect()->route('lpj.show', $report->slug)
+                ->with('error', 'Tambahkan tanda tangan terlebih dahulu sebelum mengunduh PDF.');
+        }
 
         $report->load('entries.images');
 

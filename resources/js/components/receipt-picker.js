@@ -12,7 +12,7 @@ export default function receiptPicker({ syncInput = true } = {}) {
         deletedIds: [],
         showCamera: false,
         stream: null,
-        facingMode: 'user', // 'user' = kamera depan, 'environment' = kamera belakang
+        facingMode: 'environment', // default kamera belakang (memotret nota); 'user' = kamera depan
         isMirrored: false,
 
         /** Isi dengan nota yang sudah tersimpan (mode edit). */

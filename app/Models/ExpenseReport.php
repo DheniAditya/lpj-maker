@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ExpenseReport extends Model
@@ -17,6 +18,8 @@ class ExpenseReport extends Model
     public const ROLE_VIEWER = 'viewer';
 
     public const ROLE_EDITOR = 'editor';
+
+    public const SIGNATURE_DIRECTORY = 'signatures';
 
     protected $guarded = ['id'];
 
@@ -34,6 +37,7 @@ class ExpenseReport extends Model
         // Hapus entri satu per satu agar file nota ikut terhapus (lihat ExpenseEntry::booted).
         static::deleting(function (ExpenseReport $report) {
             $report->entries->each->delete();
+            $report->deleteSignatureFile();
         });
     }
 
@@ -46,6 +50,52 @@ class ExpenseReport extends Model
     public function entries(): HasMany
     {
         return $this->hasMany(ExpenseEntry::class)->orderBy('id');
+    }
+
+    // ---------- Tanda tangan ----------
+
+    public function hasSignature(): bool
+    {
+        return $this->signature_path !== null
+            && Storage::disk(TransactionImage::DISK)->exists($this->signature_path);
+    }
+
+    public function signatureUrl(): ?string
+    {
+        return $this->signature_path ? asset('storage/'.$this->signature_path).'?v='.$this->updated_at?->timestamp : null;
+    }
+
+    /** Untuk DomPDF (gambar disematkan langsung ke PDF). */
+    public function signatureDataUri(): ?string
+    {
+        if (! $this->hasSignature()) {
+            return null;
+        }
+
+        return 'data:image/png;base64,'.base64_encode(Storage::disk(TransactionImage::DISK)->get($this->signature_path));
+    }
+
+    /** Simpan PNG tanda tangan baru, ganti yang lama. */
+    public function storeSignature(string $png): void
+    {
+        $path = self::SIGNATURE_DIRECTORY.'/'.$this->slug.'-'.Str::random(8).'.png';
+        Storage::disk(TransactionImage::DISK)->put($path, $png);
+
+        $this->deleteSignatureFile();
+        $this->update(['signature_path' => $path]);
+    }
+
+    public function removeSignature(): void
+    {
+        $this->deleteSignatureFile();
+        $this->update(['signature_path' => null]);
+    }
+
+    private function deleteSignatureFile(): void
+    {
+        if ($this->signature_path) {
+            Storage::disk(TransactionImage::DISK)->delete($this->signature_path);
+        }
     }
 
     /**
