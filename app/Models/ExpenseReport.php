@@ -42,9 +42,10 @@ class ExpenseReport extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** Urutan = urutan input; dipakai sebagai nomor transaksi (1, 2, 3, ...). */
     public function entries(): HasMany
     {
-        return $this->hasMany(ExpenseEntry::class)->orderBy('created_at');
+        return $this->hasMany(ExpenseEntry::class)->orderBy('id');
     }
 
     /**

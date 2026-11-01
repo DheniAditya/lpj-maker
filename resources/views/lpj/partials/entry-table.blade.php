@@ -20,7 +20,6 @@
                             'type' => $entry->type,
                             'description' => $entry->description,
                             'amount' => (int) $entry->amount,
-                            'date' => $entry->created_at->format('Y-m-d'),
                             'images' => $entry->images->map->only(['id', 'image_path']),
                         ];
                     @endphp
@@ -29,7 +28,7 @@
                         <td class="p-4 text-sm font-medium text-slate-800">{{ $entry->description }}</td>
                         <td class="p-4 text-center">
                             @if ($entry->images->isNotEmpty())
-                                @include('lpj.partials.receipt-gallery', ['entry' => $entry])
+                                @include('lpj.partials.receipt-gallery', ['entry' => $entry, 'no' => $loop->iteration])
                             @else
                                 <span class="text-[10px] text-red-300">Tidak Ada</span>
                             @endif

@@ -76,7 +76,7 @@ test('menambah transaksi beserta foto nota', function () {
     Storage::disk('public')->assertExists($entry->images->first()->image_path);
 });
 
-test('mengubah transaksi: ganti tanggal, hapus nota lama, tambah nota baru', function () {
+test('mengubah transaksi: hapus nota lama, tambah nota baru', function () {
     $report = makeReport();
     $entry = $report->entries()->create(['type' => 'credit', 'description' => 'Lama', 'amount' => 1000]);
     $entry->attachImages([UploadedFile::fake()->image('lama.jpg')]);
@@ -85,7 +85,6 @@ test('mengubah transaksi: ganti tanggal, hapus nota lama, tambah nota baru', fun
     $this->withSession(asGuestCreator($report))
         ->patchJson(route('lpj.entry.update', $entry), [
             'type' => 'debit',
-            'created_at' => '2026-10-20',
             'description' => 'Baru',
             'amount' => 5000,
             'deleted_images' => [$oldImage->id],
@@ -97,7 +96,6 @@ test('mengubah transaksi: ganti tanggal, hapus nota lama, tambah nota baru', fun
     $entry->refresh();
     expect($entry->description)->toBe('Baru')
         ->and($entry->type)->toBe('debit')
-        ->and($entry->created_at->format('Y-m-d'))->toBe('2026-10-20')
         ->and($entry->images)->toHaveCount(1)
         ->and($entry->images->first()->id)->not->toBe($oldImage->id);
 
@@ -112,7 +110,7 @@ test('id nota milik transaksi lain tidak ikut terhapus', function () {
     $imageB = $entryB->images()->sole();
 
     $this->withSession(asGuestCreator($report))->patchJson(route('lpj.entry.update', $entryA), [
-        'type' => 'credit', 'created_at' => '2026-10-20', 'description' => 'A', 'amount' => 1,
+        'type' => 'credit', 'description' => 'A', 'amount' => 1,
         'deleted_images' => [$imageB->id],
     ])->assertOk();
 
@@ -243,17 +241,34 @@ test('link share yang dimatikan tidak bisa dibuka', function () {
     $this->get(route('lpj.share', $report->share_token))->assertNotFound();
 });
 
-test('tabel transaksi memakai nomor urut, bukan tanggal', function () {
+test('tabel & PDF memakai nomor urut sesuai urutan input, tanpa tanggal', function () {
     $report = makeReport();
-    $report->entries()->create(['type' => 'debit', 'description' => 'Dana awal', 'amount' => 1000, 'created_at' => '2026-10-20']);
-    $report->entries()->create(['type' => 'credit', 'description' => 'Belanja', 'amount' => 500, 'created_at' => '2026-10-21']);
+    // Tanggal sengaja dibalik: urutan tetap mengikuti urutan input.
+    $report->entries()->create(['type' => 'debit', 'description' => 'Dana awal', 'amount' => 1000, 'created_at' => '2026-10-21']);
+    $belanja = $report->entries()->create(['type' => 'credit', 'description' => 'Belanja', 'amount' => 500, 'created_at' => '2026-10-20']);
+    $belanja->attachImages([UploadedFile::fake()->image('nota.jpg')]);
 
     $html = $this->withSession(asGuestCreator($report))->get(route('lpj.show', $report->slug))->assertOk()->getContent();
-    expect($html)->not->toContain('20/10/26')->not->toContain('21/10/26');
+    expect($html)->not->toContain('20/10/26')->not->toContain('edit_created_at')
+        ->and(strpos($html, 'Dana awal'))->toBeLessThan(strpos($html, 'Belanja'))
+        ->and($html)->toContain('2. Belanja'); // judul galeri nota
 
     $report->load('entries.images');
     $pdfHtml = view('lpj.pdf_template', compact('report'))->render();
     expect($pdfHtml)->toContain('>No</th>')->not->toContain('20/10/2026')
         ->and(preg_match_all('/<td class="text-center">(\d+)<\/td>/', $pdfHtml, $m))->toBe(2)
-        ->and($m[1])->toBe(['1', '2']);
+        ->and($m[1])->toBe(['1', '2'])
+        ->and($pdfHtml)->toContain('<span class="nota-title">2. Belanja</span>');
+});
+
+test('tanggal tidak bisa diubah lewat edit transaksi', function () {
+    $report = makeReport();
+    $entry = $report->entries()->create(['type' => 'credit', 'description' => 'X', 'amount' => 1]);
+    $original = $entry->created_at->toDateTimeString();
+
+    $this->withSession(asGuestCreator($report))->patchJson(route('lpj.entry.update', $entry), [
+        'type' => 'credit', 'description' => 'X', 'amount' => 1, 'created_at' => '2000-01-01',
+    ])->assertOk();
+
+    expect($entry->fresh()->created_at->toDateTimeString())->toBe($original);
 });
