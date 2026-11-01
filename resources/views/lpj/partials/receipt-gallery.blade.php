@@ -18,7 +18,7 @@
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
                     <div>
                         <h3 class="text-lg font-bold text-slate-800">Nota</h3>
-                        <p class="text-xs text-slate-500 font-medium">{{ $entry->description }} • {{ $imageCount }} File</p>
+                        <p class="text-xs text-slate-500 font-medium">{{ $no }}. {{ $entry->description }} • {{ $imageCount }} File</p>
                     </div>
                     <button type="button" @click="open = false" class="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition">
                         <x-lpj.icon name="close" />

@@ -14,16 +14,10 @@
             @include('lpj.partials.type-toggle', ['prefix' => 'edit_'])
 
             <div class="space-y-3">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label for="edit_created_at" class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tanggal</label>
-                        <input type="date" name="created_at" id="edit_created_at" required class="w-full border-slate-200 bg-slate-50 rounded-xl p-2 text-sm">
-                    </div>
-                    <div>
-                        <label for="edit_amount_display" class="text-[10px] font-bold text-slate-400 uppercase ml-1">Nominal</label>
-                        <input type="text" id="edit_amount_display" data-currency-for="edit_amount_real" inputmode="numeric" required class="w-full border-slate-200 bg-slate-50 rounded-xl p-2 text-sm font-bold">
-                        <input type="hidden" name="amount" id="edit_amount_real">
-                    </div>
+                <div>
+                    <label for="edit_amount_display" class="text-[10px] font-bold text-slate-400 uppercase ml-1">Nominal</label>
+                    <input type="text" id="edit_amount_display" data-currency-for="edit_amount_real" inputmode="numeric" required class="w-full border-slate-200 bg-slate-50 rounded-xl p-2 text-sm font-bold">
+                    <input type="hidden" name="amount" id="edit_amount_real">
                 </div>
 
                 <div>

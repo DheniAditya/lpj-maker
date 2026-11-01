@@ -61,7 +61,6 @@
 
             form.action = $(this).data('url');
             $('#edit_description').val(entry.description);
-            $('#edit_created_at').val(entry.date);
             $('#edit_amount_real').val(entry.amount);
             $('#edit_amount_display').val(formatRupiah(entry.amount));
             $('#edit_' + entry.type).prop('checked', true);

@@ -131,8 +131,8 @@
         <table class="main-table">
             <thead>
                 <tr>
-                    <th style="width: 12%;">Tanggal</th>
-                    <th style="width: 40%;">Keterangan</th>
+                    <th style="width: 7%;">No</th>
+                    <th style="width: 45%;">Keterangan</th>
                     <th style="width: 16%;">Nota</th>
                     <th style="width: 18%;">Debit</th>
                     <th style="width: 18%;">Kredit</th>
@@ -141,7 +141,7 @@
             <tbody>
                 @forelse ($report->entries as $entry)
                 <tr>
-                    <td class="text-center">{{ $entry->created_at->format('d/m/Y') }}</td>
+                    <td class="text-center">{{ $loop->iteration }}</td>
                     <td>{{ $entry->description }}</td>
                     <td class="text-center">
                         <span style="color: #64748b; font-size: 10px;">
@@ -188,8 +188,8 @@
 
         {{-- HALAMAN LAMPIRAN NOTA (2 kolom per baris) --}}
         @php
-            $receipts = $report->entries->flatMap(
-                fn ($entry) => $entry->images->map(fn ($image) => ['entry' => $entry, 'image' => $image])
+            $receipts = $report->entries->values()->flatMap(
+                fn ($entry, $index) => $entry->images->map(fn ($image) => ['no' => $index + 1, 'entry' => $entry, 'image' => $image])
             );
         @endphp
 
@@ -200,11 +200,11 @@
             <table class="gallery-table">
                 @foreach ($receipts->chunk(2) as $row)
                     <tr>
-                        @foreach ($row as ['entry' => $entry, 'image' => $image])
+                        @foreach ($row as ['no' => $no, 'entry' => $entry, 'image' => $image])
                             @php($dataUri = $image->toDataUri())
                             <td class="gallery-td">
                                 <div class="nota-box">
-                                    <span class="nota-title">{{ $entry->description }}</span>
+                                    <span class="nota-title">{{ $no }}. {{ $entry->description }}</span>
 
                                     @if ($dataUri)
                                         <img src="{{ $dataUri }}" class="nota-image">

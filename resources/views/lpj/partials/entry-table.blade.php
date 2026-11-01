@@ -8,7 +8,7 @@
         <table class="min-w-full divide-y divide-slate-100">
             <thead class="bg-slate-50">
                 <tr>
-                    @foreach (['Tgl' => 'text-left', 'Keterangan' => 'text-left', 'Nota' => 'text-center', 'Nominal' => 'text-right', 'Aksi' => 'text-center'] as $heading => $align)
+                    @foreach (['No' => 'text-center', 'Keterangan' => 'text-left', 'Nota' => 'text-center', 'Nominal' => 'text-right', 'Aksi' => 'text-center'] as $heading => $align)
                         <th class="p-4 {{ $align }} text-xs font-bold text-slate-400 uppercase tracking-wider">{{ $heading }}</th>
                     @endforeach
                 </tr>
@@ -20,16 +20,15 @@
                             'type' => $entry->type,
                             'description' => $entry->description,
                             'amount' => (int) $entry->amount,
-                            'date' => $entry->created_at->format('Y-m-d'),
                             'images' => $entry->images->map->only(['id', 'image_path']),
                         ];
                     @endphp
                     <tr id="entry-{{ $entry->id }}" class="hover:bg-blue-50/50 transition duration-150">
-                        <td class="p-4 text-sm text-slate-600 whitespace-nowrap">{{ $entry->created_at->format('d/m/y') }}</td>
+                        <td class="p-4 text-sm text-slate-600 text-center w-12">{{ $loop->iteration }}</td>
                         <td class="p-4 text-sm font-medium text-slate-800">{{ $entry->description }}</td>
                         <td class="p-4 text-center">
                             @if ($entry->images->isNotEmpty())
-                                @include('lpj.partials.receipt-gallery', ['entry' => $entry])
+                                @include('lpj.partials.receipt-gallery', ['entry' => $entry, 'no' => $loop->iteration])
                             @else
                                 <span class="text-[10px] text-red-300">Tidak Ada</span>
                             @endif
