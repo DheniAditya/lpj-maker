@@ -7,7 +7,7 @@
 
     <title>{{ config('app.name', 'lpj maker') }}</title>
     
-    <link rel="icon" href="{{ asset('build/assets/icon_only_2.png') }}" type="image/png">
+    @include('partials.head-icons')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

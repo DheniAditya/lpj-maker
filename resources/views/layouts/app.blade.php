@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
-        <link rel="icon" href="{{ asset('build/assets/icon_only_2.png') }}" type="image/png">
+        <title>{{ config('app.name', 'LPJ Maker') }}</title>
+        @include('partials.head-icons')
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
