@@ -22,8 +22,8 @@
 
         {{-- Latar foto + overlay navy: paling pekat di belakang teks agar selalu terbaca --}}
         <div class="fixed inset-0 z-0">
-            <img src="{{ asset('build/assets/kelas.jpg') }}" alt="" class="w-full h-full object-cover -scale-x-100">
-            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.95)_0%,rgba(8,37,79,.82)_45%,rgba(8,37,79,.5)_100%)]"></div>
+            <img src="{{ asset('images/kelas.jpg') }}" alt="" class="w-full h-full object-cover -scale-x-100">
+            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.82)_0%,rgba(8,37,79,.7)_50%,rgba(8,37,79,.6)_100%)]"></div>
         </div>
 
         @include('partials.guest-nav')

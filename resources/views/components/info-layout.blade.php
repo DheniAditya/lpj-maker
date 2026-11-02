@@ -18,8 +18,8 @@
 <body class="font-sans antialiased text-slate-800 bg-slate-100 overflow-x-hidden selection:bg-[#6B81A7] selection:text-white">
 
     <section class="relative bg-[#0b2246] overflow-hidden">
-        <img src="{{ asset('build/assets/kelas.jpg') }}" alt="" class="absolute inset-0 w-full h-full object-cover -scale-x-100">
-        <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.95)_0%,rgba(8,37,79,.86)_50%,rgba(8,37,79,.7)_100%)]"></div>
+        <img src="{{ asset('images/kelas.jpg') }}" alt="" class="absolute inset-0 w-full h-full object-cover -scale-x-100">
+        <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.85)_0%,rgba(8,37,79,.75)_50%,rgba(8,37,79,.65)_100%)]"></div>
 
         <div class="relative">
             @include('partials.guest-nav')

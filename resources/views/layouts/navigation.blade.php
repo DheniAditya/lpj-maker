@@ -9,7 +9,7 @@ class="sticky top-0 z-50 w-full transition-all  shadow-sm
     <div class="shrink-0 flex items-center overflow-visible transition hover:scale-105">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
             {{-- Ikon --}}
-            <img src="{{ asset('build/assets/icon_only_2.png') }}" alt="Logo" 
+            <img src="{{ asset('images/icon_only_2.png') }}" alt="Logo" 
                  class="block h-9 w-auto brightness-200 grayscale sm:grayscale-0 sm:brightness-100 transition" />
             
             {{-- Teks (Berada di kanan ikon karena gap-2 dan flex) --}}

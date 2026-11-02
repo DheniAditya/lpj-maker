@@ -1,1 +1,1 @@
-<img src="{{ asset('build/assets/icon_2_border.png') }}" alt="" class="w-40 h-30 m-8 fill-current" >
+<img src="{{ asset('images/icon_only_2.png') }}" alt="" class="w-40 h-30 m-8 fill-current" >

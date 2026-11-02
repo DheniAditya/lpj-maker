@@ -2,7 +2,7 @@
 <header x-data="{ open: false }" class="relative z-50 w-full">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 min-h-[72px] lg:min-h-[80px] flex items-center justify-between gap-4">
         <a href="{{ route('lpj.create') }}" class="flex items-center gap-2 shrink-0">
-            <img src="{{ asset('build/assets/icon_only_2.png') }}" alt="Logo" class="h-7 md:h-8 w-auto drop-shadow-md">
+            <img src="{{ asset('images/icon_only_2.png') }}" alt="Logo" class="h-7 md:h-8 w-auto drop-shadow-md">
             <span class="md:text-xl text-base font-light text-white tracking-wide">MAKER</span>
         </a>
 

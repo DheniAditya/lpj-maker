@@ -64,9 +64,9 @@
             </div>
 
             {{-- TOMBOL LOGIN --}}
-            <x-primary-button class="w-full justify-center py-3 text-lg font-bold rounded-xl bg-[#0B6BD3] hover:bg-[#0950A0] shadow-lg hover:shadow-xl transition-all active:scale-[0.98] hover:-translate-y-0.5">
+            <button type="submit" class="w-full inline-flex items-center justify-center min-h-[48px] px-5 py-3 text-base font-bold text-white rounded-xl bg-[#0B6BD3] hover:bg-[#0950A0] shadow-md transition active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#0B6BD3] focus:ring-offset-2">
                 Masuk
-            </x-primary-button>
+            </button>
             
             {{-- REGISTER LINK --}}
             <div class="mt-6 text-center text-sm text-gray-500">
