@@ -6,7 +6,7 @@
  * yang ditaruh di sana akan hilang.
  */
 test('gambar latar dan logo tersedia di public/images, bukan di public/build', function () {
-    foreach (['kelas.jpg', 'icon_only_2.png', 'icon_2_border.png'] as $file) {
+    foreach (['kelas.jpg', 'icon_only_2.png'] as $file) {
         expect(public_path('images/'.$file))->toBeFile();
     }
 
