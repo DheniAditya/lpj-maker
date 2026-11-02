@@ -26,7 +26,12 @@
         </div>
         <div class="min-h-screen">
             
-            <div class="sticky top-0 z-50 bg-transparent backdrop-blur-lg border-b border-white/15">
+            {{-- Navbar kaca bening. Saat di-scroll ke bawah (melewati kartu putih) navbar disembunyikan,
+                 dan muncul lagi saat di-scroll ke atas atau kembali ke posisi paling atas. --}}
+            <div x-data="{ hidden: false, lastY: window.scrollY }"
+                 @scroll.window.throttle.50ms="const y = window.scrollY; hidden = y > 24 && y > lastY; lastY = y"
+                 :class="hidden ? '-translate-y-full' : 'translate-y-0'"
+                 class="sticky top-0 z-50 bg-transparent backdrop-blur-lg border-b border-white/15 transition-transform duration-300">
                 @include('layouts.navigation')
             </div>
 
