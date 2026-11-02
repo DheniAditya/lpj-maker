@@ -42,12 +42,12 @@
                 <a href="{{ url('/dashboard') }}" class="text-sm font-semibold text-white/90 hover:text-white transition">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="px-6 py-2.5 md:text-sm text-xs  bg-transparent text-white/90 rounded-full hover:bg-white hover:text-blue-400 transition shadow-lg">
-                    Log in
+                    Masuk
                 </a>
 
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}" class="px-6 py-2.5 md:text-sm text-xs  bg-transparent text-white/90 rounded-full hover:bg-white hover:text-blue-400 transition shadow-lg">
-                        Sign Up
+                        Daftar
                     </a>
                 @endif
             @endauth
@@ -102,5 +102,10 @@
         </footer>
 
     </div>
+    {{-- Halaman yang dipulihkan dari cache (tombol Kembali / buka ulang dari layar utama HP)
+         membawa token CSRF lama → muat ulang agar tidak muncul "Page Expired". --}}
+    <script>
+        window.addEventListener('pageshow', (event) => { if (event.persisted) location.reload(); });
+    </script>
 </body>
 </html>

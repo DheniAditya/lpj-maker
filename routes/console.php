@@ -8,12 +8,13 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Jadikan / cabut admin: php artisan lpj:admin email@contoh.com [--remove]
-Artisan::command('lpj:admin {email} {--remove}', function (string $email) {
-    $user = User::where('email', $email)->first();
+// Jadikan / cabut admin: php artisan lpj:admin username [--remove]
+Artisan::command('lpj:admin {username} {--remove}', function (string $username) {
+    $username = User::normalizeUsername($username);
+    $user = User::where('username', $username)->first();
 
     if (! $user) {
-        $this->error("Pengguna dengan email {$email} tidak ditemukan. Daftar dulu lewat halaman Register.");
+        $this->error("Pengguna dengan username {$username} tidak ditemukan. Daftar dulu lewat halaman Register.");
 
         return 1;
     }

@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExpenseReport;
+use App\Models\PasswordResetRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\View\View;
 
@@ -17,8 +16,8 @@ use Illuminate\View\View;
  * Panel admin: memantau dan mengelola pengguna.
  *
  * Password tersimpan sebagai hash (satu arah), jadi admin tidak bisa melihat password
- * pengguna. Untuk pengguna yang lupa password, admin bisa membuatkan password baru
- * atau mengirim link reset ke email pengguna.
+ * pengguna. Pengguna yang lupa password mengirim permintaan dari halaman login; admin
+ * melihatnya di panel ini lalu membuatkan password baru.
  */
 class UserController extends Controller
 {
@@ -30,7 +29,7 @@ class UserController extends Controller
             ->withCount('expenseReports')
             ->when($search, fn ($query) => $query->where(fn ($q) => $q
                 ->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")))
+                ->orWhere('username', 'like', "%{$search}%")))
             ->orderByDesc('is_admin')
             ->latest()
             ->paginate(20)
@@ -43,32 +42,37 @@ class UserController extends Controller
             'sharedReports' => ExpenseReport::where('is_shared', true)->count(),
         ];
 
-        return view('admin.users.index', compact('users', 'stats', 'search'));
+        $resetRequests = PasswordResetRequest::pending()->with('user')->latest('updated_at')->get();
+
+        return view('admin.users.index', compact('users', 'stats', 'search', 'resetRequests'));
     }
 
     public function show(User $user): View
     {
         $reports = $user->expenseReports()->withTotals()->withCount('entries')->latest('updated_at')->get();
 
-        return view('admin.users.show', compact('user', 'reports'));
+        $resetRequest = $user->passwordResetRequests()->pending()->latest('updated_at')->first();
+
+        return view('admin.users.show', compact('user', 'reports', 'resetRequest'));
     }
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        $request->merge(['username' => User::normalizeUsername($request->input('username'))]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'username' => User::usernameRules($user->id),
             'is_admin' => ['boolean'],
+        ], [
+            'username.regex' => 'Username hanya boleh berisi huruf kecil, angka, titik, garis bawah, atau strip (tanpa spasi).',
+            'username.unique' => 'Username ini sudah dipakai pengguna lain.',
         ]);
 
         $data['is_admin'] = $request->boolean('is_admin');
 
         if ($user->is($request->user()) && ! $data['is_admin']) {
             return back()->withErrors(['is_admin' => 'Anda tidak bisa mencabut status admin akun sendiri.']);
-        }
-
-        if ($data['email'] !== $user->email) {
-            $data['email_verified_at'] = null;
         }
 
         $user->forceFill($data)->save(); // is_admin sengaja tidak fillable
@@ -88,17 +92,18 @@ class UserController extends Controller
             'remember_token' => null,
         ])->save();
 
-        return back()->with('status', "Password {$user->name} sudah diganti. Sampaikan password baru ke pengguna dan minta ia menggantinya setelah login.");
+        // Permintaan lupa password dari pengguna ini dianggap selesai
+        $user->passwordResetRequests()->pending()->get()->each->resolve($request->user());
+
+        return back()->with('status', "Password {$user->name} sudah diganti. Sampaikan password baru ke pengguna (username: {$user->username}) dan minta ia menggantinya setelah login.");
     }
 
-    /** Kirim link reset password ke email pengguna (butuh pengaturan email/SMTP di .env). */
-    public function sendResetLink(User $user): RedirectResponse
+    /** Tandai permintaan lupa password selesai/diabaikan (mis. username tidak dikenal). */
+    public function resolveResetRequest(Request $request, PasswordResetRequest $resetRequest): RedirectResponse
     {
-        $status = Password::sendResetLink(['email' => $user->email]);
+        $resetRequest->resolve($request->user());
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', "Link reset password dikirim ke {$user->email}.")
-            : back()->withErrors(['email' => __($status)]);
+        return back()->with('status', 'Permintaan reset password ditandai selesai.');
     }
 
     public function destroy(Request $request, User $user): RedirectResponse

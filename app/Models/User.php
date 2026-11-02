@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,7 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
+        'username',
         'password',
     ];
 
@@ -64,9 +63,31 @@ class User extends Authenticatable
         return $this->hasMany(ExpenseReport::class);
     }
 
+    public function passwordResetRequests(): HasMany
+    {
+        return $this->hasMany(PasswordResetRequest::class);
+    }
+
     public function isAdmin(): bool
     {
         return (bool) $this->is_admin;
+    }
+
+    /**
+     * Aturan username: huruf kecil, angka, titik, garis bawah, strip, dan @
+     * (@ dan titik diizinkan agar username lama yang berasal dari email tetap valid).
+     */
+    public static function usernameRules(?int $ignoreId = null): array
+    {
+        return [
+            'required', 'string', 'min:3', 'max:100', 'regex:/^[a-z0-9._@-]+$/',
+            \Illuminate\Validation\Rule::unique('users', 'username')->ignore($ignoreId),
+        ];
+    }
+
+    public static function normalizeUsername(?string $username): string
+    {
+        return strtolower(trim((string) $username));
     }
 
     public function hasReachedReportLimit(): bool
