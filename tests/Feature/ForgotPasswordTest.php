@@ -64,3 +64,14 @@ test('admin bisa menandai permintaan selesai; non-admin tidak', function () {
 
     expect($request->fresh()->resolved_at)->not->toBeNull();
 });
+
+test('halaman lupa password punya tombol chat WhatsApp admin', function () {
+    $this->get('/forgot-password')->assertOk()->assertSee('https://wa.me/6285198215605', false)->assertSee('Chat admin di WhatsApp');
+
+    $this->post('/forgot-password', ['username' => 'Zidan'])->assertSessionHas('sent_username', 'zidan');
+
+    $this->followingRedirects()->from('/forgot-password')->post('/forgot-password', ['username' => 'zidan'])
+        ->assertSee('Kabari admin lewat WhatsApp')
+        ->assertSee('wa.me/6285198215605?text=', false)
+        ->assertSee(rawurlencode('Username: zidan'), false);
+});

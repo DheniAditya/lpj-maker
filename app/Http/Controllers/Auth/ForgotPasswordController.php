@@ -40,6 +40,8 @@ class ForgotPasswordController extends Controller
             ->touch();
 
         // Pesan sama untuk username yang ada / tidak ada (tidak membocorkan daftar akun).
-        return back()->with('status', 'Permintaan terkirim. Admin akan mereset password kamu lalu memberi tahu password barunya.');
+        return back()
+            ->with('status', 'Permintaan terkirim. Admin akan mereset password kamu lalu memberi tahu password barunya.')
+            ->with('sent_username', $data['username']);
     }
 }
