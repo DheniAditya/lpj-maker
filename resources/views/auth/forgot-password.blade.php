@@ -29,7 +29,7 @@
                 <x-input-label for="username" value="Username" class="block text-gray-600 text-sm font-bold mb-2 ml-1" />
                 <x-text-input id="username" type="text" name="username" x-model="username" required autofocus autocapitalize="none" spellcheck="false"
                     placeholder="Username akun kamu"
-                    class="w-full py-3.5 px-5 bg-gray-50 rounded-2xl border-gray-200 focus:ring-4 focus:ring-[#6B81A7]/20 focus:border-[#6B81A7] focus:bg-white" />
+                    class="w-full py-3.5 px-5 bg-gray-50 rounded-2xl border-gray-200 focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white" />
                 <x-input-error :messages="$errors->get('username')" class="mt-2 text-xs ml-1" />
             </div>
 
@@ -37,14 +37,14 @@
                 <x-input-label for="contact" value="Nomor WhatsApp (opsional)" class="block text-gray-600 text-sm font-bold mb-2 ml-1" />
                 <x-text-input id="contact" type="text" name="contact" :value="old('contact')" inputmode="tel"
                     placeholder="Agar admin bisa mengabari kamu"
-                    class="w-full py-3.5 px-5 bg-gray-50 rounded-2xl border-gray-200 focus:ring-4 focus:ring-[#6B81A7]/20 focus:border-[#6B81A7] focus:bg-white" />
+                    class="w-full py-3.5 px-5 bg-gray-50 rounded-2xl border-gray-200 focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white" />
                 <x-input-error :messages="$errors->get('contact')" class="mt-2 text-xs ml-1" />
             </div>
 
             <div>
                 <x-input-label for="note" value="Catatan untuk admin (opsional)" class="block text-gray-600 text-sm font-bold mb-2 ml-1" />
                 <textarea id="note" name="note" rows="2" maxlength="500" placeholder="Misal: nama lengkap / unit"
-                    class="w-full py-3 px-5 bg-gray-50 rounded-2xl border-gray-200 focus:ring-4 focus:ring-[#6B81A7]/20 focus:border-[#6B81A7] focus:bg-white text-sm">{{ old('note') }}</textarea>
+                    class="w-full py-3 px-5 bg-gray-50 rounded-2xl border-gray-200 focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white text-sm">{{ old('note') }}</textarea>
                 <x-input-error :messages="$errors->get('note')" class="mt-2 text-xs ml-1" />
             </div>
 

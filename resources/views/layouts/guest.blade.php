@@ -102,5 +102,10 @@
         </footer>
 
     </div>
+    {{-- Halaman yang dipulihkan dari cache (tombol Kembali / buka ulang dari layar utama HP)
+         membawa token CSRF lama → muat ulang agar tidak muncul "Page Expired". --}}
+    <script>
+        window.addEventListener('pageshow', (event) => { if (event.persisted) location.reload(); });
+    </script>
 </body>
 </html>

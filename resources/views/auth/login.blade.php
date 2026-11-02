@@ -20,7 +20,7 @@
                               :value="old('username')"
                               required autofocus autocomplete="username" autocapitalize="none" spellcheck="false"
                               placeholder="Masukkan username"
-                              class="w-full py-4 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-4 focus:ring-[#6B81A7]/20 focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
+                              class="w-full py-4 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
                 <x-input-error :messages="$errors->get('username')" class="mt-2 text-xs text-red-500 font-medium ml-1" />
             </div>
 
@@ -32,7 +32,7 @@
                               name="password" 
                               required autocomplete="current-password" 
                               placeholder="Masukkan password"
-                              class="w-full py-4 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-4 focus:ring-[#6B81A7]/20 focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
+                              class="w-full py-4 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs text-red-500 font-medium ml-1" />
             </div>
 

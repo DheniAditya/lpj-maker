@@ -21,8 +21,8 @@
                         [&_input]:transition-all
                         [&_input]:shadow-sm
                         
-                        [&_input:focus]:ring-4
-                        [&_input:focus]:ring-[#6B81A7]/20
+                        [&_input:focus]:ring-1
+                        [&_input:focus]:ring-[#6B81A7]
                         [&_input:focus]:border-[#6B81A7]
                         [&_input:focus]:bg-white
                         [&_input:focus]:outline-none
