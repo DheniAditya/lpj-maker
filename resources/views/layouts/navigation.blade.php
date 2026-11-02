@@ -1,5 +1,6 @@
 <nav x-data="{ open: false }" 
-class="w-full">
+class="sticky top-0 z-50 w-full transition-all
+       backdrop-blur-sm  ">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -9,22 +10,22 @@ class="w-full">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
             {{-- Ikon --}}
             <img src="{{ asset('images/icon_only_2.png') }}" alt="Logo" 
-                 class="block h-9 w-auto brightness-200 grayscale sm:grayscale-0 sm:brightness-100 group-[.is-scrolled]:invert transition" />
+                 class="block h-9 w-auto brightness-200 grayscale sm:grayscale-0 sm:brightness-100 transition" />
             
             {{-- Teks (Berada di kanan ikon karena gap-2 dan flex) --}}
-            <span class="md:text-xl text-base font-light text-white group-[.is-scrolled]:text-[#0f2a4a] tracking-wide transition-colors">MAKER</span>
+            <span class="md:text-xl text-base font-light text-white tracking-wide">MAKER</span>
         </a>
     </div>
 </div>
 
             <div class="hidden sm:flex sm:items-center sm:gap-6 sm:ms-6">
-                <a href="{{ route('fitur') }}" class="text-sm font-semibold text-white/85 hover:text-white group-[.is-scrolled]:text-slate-600 group-[.is-scrolled]:hover:text-[#0B6BD3] transition-colors">Fitur</a>
-                <a href="{{ route('cara-pakai') }}" class="text-sm font-semibold text-white/85 hover:text-white group-[.is-scrolled]:text-slate-600 group-[.is-scrolled]:hover:text-[#0B6BD3] transition-colors">Cara Pakai</a>
-                <a href="{{ route('bantuan') }}" class="text-sm font-semibold text-white/85 hover:text-white group-[.is-scrolled]:text-slate-600 group-[.is-scrolled]:hover:text-[#0B6BD3] transition-colors">Bantuan</a>
+                <a href="{{ route('fitur') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Fitur</a>
+                <a href="{{ route('cara-pakai') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Cara Pakai</a>
+                <a href="{{ route('bantuan') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Bantuan</a>
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-bold rounded-full text-white bg-white/10 hover:bg-white/20 group-[.is-scrolled]:text-[#0f2a4a] group-[.is-scrolled]:bg-slate-100 group-[.is-scrolled]:hover:bg-slate-200 focus:outline-none transition ease-in-out duration-150">
+                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-bold rounded-full text-white bg-white/10 hover:bg-white/20 focus:outline-none transition ease-in-out duration-150">
                                 <div>{{ Auth::user()->name }}</div>
                                 @if ($pendingResetRequests)
                                     <span class="ms-1.5 w-2 h-2 rounded-full bg-rose-500" title="Ada permintaan reset password"></span>
@@ -63,7 +64,7 @@ class="w-full">
                     </x-dropdown>
                 @else
                     <div class="flex gap-3">
-                        <a href="{{ route('login') }}" class="text-sm font-bold bg-white text-[#0F172A] px-4 py-2 rounded-full hover:bg-gray-100 group-[.is-scrolled]:bg-slate-100 transition shadow-lg">
+                        <a href="{{ route('login') }}" class="text-sm font-bold bg-white text-[#0F172A] px-4 py-2 rounded-full hover:bg-gray-100 transition shadow-lg">
                             Masuk
                         </a>
                         @if (Route::has('register'))
@@ -76,7 +77,7 @@ class="w-full">
             </div>
 
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-white/10 group-[.is-scrolled]:text-slate-700 group-[.is-scrolled]:hover:text-[#0f2a4a] group-[.is-scrolled]:hover:bg-slate-100 focus:outline-none transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-white/10 focus:outline-none transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
