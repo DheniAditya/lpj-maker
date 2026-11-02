@@ -18,11 +18,11 @@
     <body class="font-sans antialiased text-slate-800 bg-[#0b2246] selection:bg-[#6B81A7] selection:text-white">
         
         <div class="fixed inset-0 -z-10">
-            <img src="{{ asset('build/assets/kelas.jpg') }}"
+            <img src="{{ asset('images/kelas.jpg') }}"
                     alt="Background Building" 
                  class="w-full h-full object-cover">
             
-            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.95)_0%,rgba(8,37,79,.86)_50%,rgba(8,37,79,.7)_100%)]"></div>
+            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.85)_0%,rgba(8,37,79,.75)_50%,rgba(8,37,79,.65)_100%)]"></div>
         </div>
         <div class="min-h-screen">
             

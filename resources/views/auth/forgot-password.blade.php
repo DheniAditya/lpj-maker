@@ -44,9 +44,9 @@
                 <x-input-error :messages="$errors->get('note')" class="mt-2 text-xs ml-1" />
             </div>
 
-            <x-primary-button class="w-full justify-center py-3 text-base font-bold rounded-xl bg-[#0B6BD3] hover:bg-[#0950A0]">
+            <button type="submit" class="w-full inline-flex items-center justify-center min-h-[48px] px-5 py-3 text-base font-bold text-white rounded-xl bg-[#0B6BD3] hover:bg-[#0950A0] shadow-md transition active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#0B6BD3] focus:ring-offset-2">
                 Kirim permintaan ke admin
-            </x-primary-button>
+            </button>
 
             {{-- Chat langsung ke admin, username ikut terisi otomatis --}}
             <div class="relative py-1 text-center text-xs text-gray-400">
