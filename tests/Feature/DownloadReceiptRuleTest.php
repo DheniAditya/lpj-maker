@@ -32,11 +32,11 @@ test('PDF tidak bisa diunduh selama ada transaksi Kredit tanpa nota', function (
     $this->withSession($this->session)
         ->get(route('lpj.download', $this->report->slug))
         ->assertRedirect(route('lpj.show', $this->report->slug))
-        ->assertSessionHas('error', 'Nota belum lengkap. Anda belum bisa mengunduh pdf');
+        ->assertSessionHas('error', 'Nota belum lengkap. Download PDF terkunci.');
 
     $this->withSession($this->session)->get(route('lpj.show', $this->report->slug))
         ->assertOk()
-        ->assertSee('Nota belum lengkap. Anda belum bisa mengunduh pdf')
+        ->assertSee('Nota belum lengkap. Download PDF terkunci.')
         ->assertDontSee(route('lpj.download', $this->report->slug));
 });
 

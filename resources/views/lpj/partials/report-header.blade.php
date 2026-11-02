@@ -79,7 +79,7 @@
         @if ($missingReceipts)
             <p data-missing-receipts class="text-xs text-amber-600 font-medium inline-flex items-start gap-1 lg:text-right">
                 <x-lpj.icon name="warning" class="w-4 h-4 shrink-0" />
-                <span>Nota belum lengkap. Anda belum bisa mengunduh pdf</span>
+                <span>Nota belum lengkap. Download PDF terkunci.</span>
             </p>
         @endif
 
