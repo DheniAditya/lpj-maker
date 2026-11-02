@@ -18,7 +18,10 @@ class="sticky top-0 z-50 w-full transition-all  shadow-sm
     </div>
 </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:gap-6 sm:ms-6">
+                <a href="{{ route('fitur') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Fitur</a>
+                <a href="{{ route('cara-pakai') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Cara Pakai</a>
+                <a href="{{ route('bantuan') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Bantuan</a>
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -65,7 +68,7 @@ class="sticky top-0 z-50 w-full transition-all  shadow-sm
                             Masuk
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="text-sm font-bold bg-white text-[#0F172A] px-4 py-2 rounded-full hover:bg-gray-100 transition shadow-lg">
+                            <a href="{{ route('register') }}" class="text-sm font-bold bg-[#0B6BD3] text-white px-4 py-2 rounded-full hover:bg-[#0950A0] transition shadow-lg">
                                 Daftar
                             </a>
                         @endif
@@ -84,7 +87,7 @@ class="sticky top-0 z-50 w-full transition-all  shadow-sm
         </div>
     </div>
 
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-[#0F172A] border-t border-white/10">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-[#0f2a4a] border-t border-white/10">
         {{-- ... Isi Mobile Menu Anda ... --}}
         <div class="pt-2 pb-3 space-y-1">
             @auth
@@ -104,6 +107,9 @@ class="sticky top-0 z-50 w-full transition-all  shadow-sm
             <x-responsive-nav-link :href="route('lpj.create')" :active="request()->routeIs('lpj.create')">
                 {{ __('Buat LPJ Baru') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('fitur')">Fitur</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('cara-pakai')">Cara Pakai</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('bantuan')">Bantuan</x-responsive-nav-link>
         </div>
 
         <div class="pt-4 pb-1 border-t border-white/10">

@@ -17,9 +17,9 @@
     <div class="grid grid-cols-2 gap-3 mb-4">
         @foreach ([['upload', 'Upload', '$refs.fileInput.click()'], ['camera', 'Kamera', 'startCamera()']] as [$icon, $label, $action])
             <button type="button" @click="{{ $action }}"
-                class="{{ $compact ? 'h-16' : 'h-20' }} border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center hover:bg-slate-50 hover:border-blue-400 transition group">
-                <x-lpj.icon :name="$icon" stroke-width="1.8" class="{{ $compact ? 'w-5 h-5' : 'w-7 h-7' }} text-slate-400 group-hover:text-blue-500 mb-1" />
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-blue-600">{{ $label }}</span>
+                class="{{ $compact ? 'h-[72px]' : 'h-[88px]' }} border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center hover:bg-slate-50 hover:border-blue-400 transition group">
+                <x-lpj.icon :name="$icon" stroke-width="1.8" class="{{ $compact ? 'w-7 h-7' : 'w-8 h-8' }} text-slate-400 group-hover:text-blue-500 mb-1" />
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-blue-600">{{ $label }}</span>
             </button>
         @endforeach
     </div>

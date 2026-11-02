@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LpjController::class, 'create'])->name('lpj.create');
 
+// Halaman informasi publik
+Route::view('/fitur', 'info.fitur')->name('fitur');
+Route::view('/cara-pakai', 'info.cara-pakai')->name('cara-pakai');
+Route::view('/bantuan', 'info.bantuan')->name('bantuan');
+
 Route::prefix('lpj')->name('lpj.')->group(function () {
     Route::post('/store', [LpjController::class, 'store'])->name('store');
 

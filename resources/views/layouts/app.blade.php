@@ -15,18 +15,18 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     
-    <body class="font-sans antialiased text-slate-800 selection:bg-[#6B81A7] selection:text-white">
+    <body class="font-sans antialiased text-slate-800 bg-[#0b2246] selection:bg-[#6B81A7] selection:text-white">
         
         <div class="fixed inset-0 -z-10">
             <img src="{{ asset('build/assets/kelas.jpg') }}"
                     alt="Background Building" 
                  class="w-full h-full object-cover">
             
-            <div class="absolute inset-0 bg-gradient-to-br from-[#08254F]/90 via-[#6B81A7]/80 to-slate-200/50 backdrop-blur-[2px]"></div>
+            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.95)_0%,rgba(8,37,79,.86)_50%,rgba(8,37,79,.7)_100%)]"></div>
         </div>
         <div class="min-h-screen">
             
-            <div class="sticky top-0 z-50 bg-[#6B81A7]/10  backdrop-blur-md border-b border-white/40 shadow-sm">
+            <div class="sticky top-0 z-50 bg-[#08254F]/50 backdrop-blur-md border-b border-white/10">
                 @include('layouts.navigation')
             </div>
 
@@ -52,7 +52,7 @@
             
         </div>
         
-        <footer class="py-6 text-center text-xs text-slate-600 font-medium relative z-10">
+        <footer class="py-6 text-center text-xs text-white/70 font-medium relative z-10">
             &copy; {{ date('Y') }} {{ config('app.name') }}. <span class="opacity-70">Professional Reporting System.</span>
         </footer>
     

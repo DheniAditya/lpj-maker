@@ -6,97 +6,85 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'lpj maker') }}</title>
-    
+
     @include('partials.head-icons')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-    
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased text-gray-900 overflow-x-hidden selection:bg-[#6B81A7] selection:text-white">
-    
+<body class="font-sans antialiased text-gray-900 overflow-x-hidden bg-[#0b2246] selection:bg-[#6B81A7] selection:text-white">
+
     <div class="relative w-full min-h-screen flex flex-col">
 
+        {{-- Latar foto + overlay navy: paling pekat di belakang teks agar selalu terbaca --}}
         <div class="fixed inset-0 z-0">
-            <img src="{{ asset('build/assets/kelas.jpg') }}"
-                alt="Background Building" 
-                 class="w-full h-full object-cover -scale-x-100 ">
-            
-            <div class="absolute inset-0 bg-gradient-to-r from-[#6B81A7]/95 via-[#6B81A7]/80 to-transparent"></div>
+            <img src="{{ asset('build/assets/kelas.jpg') }}" alt="" class="w-full h-full object-cover -scale-x-100">
+            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.95)_0%,rgba(8,37,79,.82)_45%,rgba(8,37,79,.5)_100%)]"></div>
         </div>
 
-        <header class="fixed top-0 left-0 w-full z-50 p-6 lg:px-12 flex justify-between items-center 
-               backdrop-blur-sm bg-[#6B81A7]/10 
-             shadow-sm transition-all duration-300">
-                 <a href="/" class="flex items-center gap-2 group">
-         <img src="{{ asset('build/assets/icon_only_2.png') }}" alt="Logo" class="h-6 md:h-10 w-auto drop-shadow-md brightness-200 grayscale sm:grayscale-0 sm:brightness-100 transition">
-         <span class="md:text-xl text-base font-light text-white tracking-wide">MAKER</span>
-    </a>
+        @include('partials.guest-nav')
 
-    <nav class="flex items-center gap-4">
-         @if (Route::has('login'))
-            @auth
-                <a href="{{ url('/dashboard') }}" class="text-sm font-semibold text-white/90 hover:text-white transition">Dashboard</a>
-            @else
-                <a href="{{ route('login') }}" class="px-6 py-2.5 md:text-sm text-xs  bg-transparent text-white/90 rounded-full hover:bg-white hover:text-blue-400 transition shadow-lg">
-                    Masuk
-                </a>
+        <main class="relative z-10 flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pb-10 pt-4 lg:pt-8 grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-12">
 
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="px-6 py-2.5 md:text-sm text-xs  bg-transparent text-white/90 rounded-full hover:bg-white hover:text-blue-400 transition shadow-lg">
-                        Daftar
-                    </a>
-                @endif
-            @endauth
-        @endif
-    </nav>
-
-</header>
-        <main class=" relative z-10 flex-grow w-full max-w-7xl mx-auto pt-20 px-6 lg:px-12z grid grid-cols-1 lg:grid-cols-2 items-center gap-4">
-            
-            <div class="pl-8 flex flex-col justify-center text-white space-y-2 order-2">
-                <p class="text-blue-100 tracking-[0.3em] text-xs font-bold uppercase mb-2 ml-1">
+            <div class="text-white order-1 lg:order-2">
+                <p class="text-[#BFDBFE] tracking-[0.3em] text-[11px] sm:text-xs font-bold uppercase mb-3">
                     Automatic Financial Reporting System
                 </p>
-                
-                <h1 class="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight drop-shadow-sm">
+
+                <h1 class="text-4xl sm:text-5xl lg:text-[68px] font-extrabold leading-[1.05] tracking-tight">
                     SMP SMK <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
-                        IDN Solo
-                    </span>
+                    <span class="text-[#BFDBFE]">IDN Solo</span>
                 </h1>
-                
-                <h2 class="text-lg md:text-3xl font-bold text-white/60 uppercase tracking-widest mt-[-0.5rem] blur-[1px] select-none">
+
+                <h2 class="mt-3 text-base sm:text-xl lg:text-[22px] font-bold text-white/90 uppercase tracking-[0.12em]">
                     Jagoan IT Pinter Ngaji
                 </h2>
 
-                <p class="mt-6 text-lg text-white/90 max-w-md font-light leading-relaxed">
+                <p class="mt-5 text-base lg:text-lg text-white/85 max-w-md leading-relaxed hidden sm:block">
                     Generate PDF financial reports instantly. Deliver on your promises—fast, responsive, and responsible.
                 </p>
 
-                <div class="mt-8 flex gap-4">
-                    <a href="{{ route('register') }}" class="px-8 py-3 bg-[#566987] text-white font-bold rounded-lg hover:bg-[#465670] transition shadow-xl border border-white/10">
-                        Join now&rarr;
-                    </a>
-                </div>
+                <ul class="mt-6 hidden sm:flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-white/90">
+                    <li class="flex items-center gap-2.5">
+                        <span class="w-[38px] h-[38px] rounded-xl bg-white/15 flex items-center justify-center"><x-lpj.icon name="camera" class="w-5 h-5" /></span>
+                        Kamera
+                    </li>
+                    <li class="flex items-center gap-2.5">
+                        <span class="w-[38px] h-[38px] rounded-xl bg-white/15 flex items-center justify-center"><x-lpj.icon name="signature" class="w-5 h-5" /></span>
+                        Tanda Tangan
+                    </li>
+                    <li class="flex items-center gap-2.5">
+                        <span class="w-[38px] h-[38px] rounded-xl bg-white/15 flex items-center justify-center"><x-lpj.icon name="download" class="w-5 h-5" /></span>
+                        Download PDF
+                    </li>
+                </ul>
+
+                @guest
+                    <div class="mt-8 hidden sm:flex">
+                        <a href="{{ route('register') }}" class="inline-flex items-center min-h-[44px] px-7 py-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-white font-bold transition">
+                            Join now&rarr;
+                        </a>
+                    </div>
+                @endguest
             </div>
 
-    <div class="px-auto order-1 py-8 bg-[#6B81A7]/30 backdrop-blur-xl border border-white/30 rounded-3xl shadow-2xl">  
-            {{ $slot }}
-    </div>
+            <div class="order-2 lg:order-1 w-full">
+                {{ $slot }}
+            </div>
 
         </main>
 
-        <footer class="relative z-10 w-full p-6 text-center lg:text-left lg:px-12 text-xs text-white/60">
-            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+        <footer class="relative z-10 w-full px-6 py-6 lg:px-12 text-xs text-white/70">
+            <div class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
                 <p>&copy; {{ date('Y') }} LPJ Maker System. All rights reserved.</p>
                 <div class="flex gap-6">
                     <a href="#" class="hover:text-white transition">Privacy</a>
                     <a href="#" class="hover:text-white transition">Terms</a>
-                    <a href="#" class="hover:text-white transition">Help</a>
+                    <a href="{{ route('bantuan') }}" class="hover:text-white transition">Help</a>
                 </div>
             </div>
         </footer>
