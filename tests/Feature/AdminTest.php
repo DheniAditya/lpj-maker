@@ -90,3 +90,13 @@ test('perintah lpj:admin menjadikan dan mencabut admin', function () {
 
     $this->artisan('lpj:admin', ['username' => 'tidak-ada'])->assertFailed();
 });
+
+test('daftar pengguna di panel admin diberi nomor urut yang berlanjut antarhalaman', function () {
+    User::factory()->count(21)->create();
+
+    $this->actingAs($this->admin)->get(route('admin.users.index'))
+        ->assertOk()->assertSee('>No</th>', false)->assertSee('tabular-nums">1</td>', false);
+
+    $this->actingAs($this->admin)->get(route('admin.users.index', ['page' => 2]))
+        ->assertOk()->assertSee('tabular-nums">21</td>', false);
+});

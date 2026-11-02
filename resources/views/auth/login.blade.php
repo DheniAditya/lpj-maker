@@ -1,6 +1,6 @@
 <x-guest-layout>
     
-    <div class="bg-white w-full max-w-lg mx-auto p-8 sm:p-10 rounded-[2.5rem] shadow-2xl relative">
+    <div class="bg-white w-full max-w-lg mx-auto p-7 sm:p-9 rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,.35)] relative">
         
         <div class="mb-8 text-center">
             <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Masuk ke akun kamu</h2>
@@ -20,7 +20,7 @@
                               :value="old('username')"
                               required autofocus autocomplete="username" autocapitalize="none" spellcheck="false"
                               placeholder="Masukkan username"
-                              class="w-full py-4 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
+                              class="w-full py-3 px-5 bg-white rounded-xl border-slate-300 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
                 <x-input-error :messages="$errors->get('username')" class="mt-2 text-xs text-red-500 font-medium ml-1" />
             </div>
 
@@ -32,7 +32,7 @@
                               name="password" 
                               required autocomplete="current-password" 
                               placeholder="Masukkan password"
-                              class="w-full py-4 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
+                              class="w-full py-3 px-5 bg-white rounded-xl border-slate-300 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs text-red-500 font-medium ml-1" />
             </div>
 
@@ -42,7 +42,7 @@
                     
                     {{-- Checkbox Asli (Tanpa wrapper induk, tidak butuh !important) --}}
                     <input id="remember_me" type="checkbox" 
-                           class="peer appearance-none w-5 h-5 rounded bg-white border border-gray-300 text-[#6B81A7] shadow-sm checked:bg-[#6B81A7] checked:border-transparent focus:ring-2 focus:ring-[#6B81A7] focus:ring-offset-0 cursor-pointer transition-all" 
+                           class="peer appearance-none w-5 h-5 rounded bg-white border border-gray-300 text-[#0B6BD3] shadow-sm checked:bg-[#6B81A7] checked:border-transparent focus:ring-2 focus:ring-[#6B81A7] focus:ring-offset-0 cursor-pointer transition-all" 
                            name="remember" checked>
                     
                     {{-- Icon Centang SVG --}}
@@ -64,14 +64,14 @@
             </div>
 
             {{-- TOMBOL LOGIN --}}
-            <x-primary-button class="w-full justify-center py-4 text-lg font-bold rounded-2xl bg-[#4A5D7B] hover:bg-[#36445a] shadow-lg hover:shadow-xl transition-all active:scale-[0.98] hover:-translate-y-0.5">
+            <x-primary-button class="w-full justify-center py-3 text-lg font-bold rounded-xl bg-[#0B6BD3] hover:bg-[#0950A0] shadow-lg hover:shadow-xl transition-all active:scale-[0.98] hover:-translate-y-0.5">
                 Masuk
             </x-primary-button>
             
             {{-- REGISTER LINK --}}
             <div class="mt-6 text-center text-sm text-gray-500">
                 Belum punya akun?
-                <a href="{{ route('register') }}" class="font-bold text-[#6B81A7] hover:underline hover:text-[#4A5D7B] transition">Daftar</a>
+                <a href="{{ route('register') }}" class="font-bold text-[#0B6BD3] hover:underline hover:text-[#0950A0] transition">Daftar</a>
             </div>
 
         </form>

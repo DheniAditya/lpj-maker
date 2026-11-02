@@ -2,7 +2,7 @@
     @php($isSelf = $user->is(auth()->user()))
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 space-y-6">
-        <a href="{{ route('admin.users.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white/90 hover:text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition">
+        <a href="{{ route('admin.users.index') }}" class="inline-flex items-center gap-2 text-[13px] font-bold text-white/90 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1 min-h-[32px] rounded-full transition">
             <x-lpj.icon name="arrow-left" class="w-4 h-4" /> Semua pengguna
         </a>
 

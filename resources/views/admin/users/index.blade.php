@@ -90,6 +90,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="bg-slate-50 text-xs uppercase text-slate-400">
                         <tr>
+                            <th class="p-4 w-12 text-center font-bold">No</th>
                             <th class="p-4 text-left font-bold">Nama</th>
                             <th class="p-4 text-left font-bold">Username</th>
                             <th class="p-4 text-center font-bold">LPJ</th>
@@ -100,6 +101,7 @@
                     <tbody class="divide-y divide-slate-100">
                         @forelse ($users as $user)
                             <tr class="hover:bg-slate-50">
+                                <td class="p-4 text-center text-slate-400 font-semibold tabular-nums">{{ $users->firstItem() + $loop->index }}</td>
                                 <td class="p-4">
                                     <div class="font-semibold text-slate-800">{{ $user->name }}</div>
                                     @if ($user->isAdmin())
@@ -118,7 +120,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada pengguna yang cocok.</td></tr>
+                            <tr><td colspan="6" class="p-8 text-center text-slate-400">Tidak ada pengguna yang cocok.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

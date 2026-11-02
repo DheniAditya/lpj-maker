@@ -1,11 +1,11 @@
 @php
     // Gaya kolom isian sama dengan halaman Masuk
-    $input = 'w-full py-3.5 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none';
+    $input = 'w-full py-3 px-5 bg-white rounded-xl border-slate-300 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none';
     $label = 'block text-gray-600 text-sm font-bold mb-2 ml-1 tracking-wide';
 @endphp
 
 <x-guest-layout>
-    <div class="bg-white w-full max-w-lg mx-auto p-8 sm:p-10 rounded-[2.5rem] shadow-2xl relative">
+    <div class="bg-white w-full max-w-lg mx-auto p-7 sm:p-9 rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,.35)] relative">
 
         <div class="mb-8 text-center">
             <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Buat akun baru</h2>
@@ -52,13 +52,13 @@
                 <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-xs ml-1" />
             </div>
 
-            <x-primary-button class="w-full justify-center py-4 text-lg font-bold rounded-2xl bg-[#4A5D7B] hover:bg-[#36445a] shadow-lg hover:shadow-xl transition-all active:scale-[0.98] hover:-translate-y-0.5">
+            <x-primary-button class="w-full justify-center py-3 text-lg font-bold rounded-xl bg-[#0B6BD3] hover:bg-[#0950A0] shadow-lg hover:shadow-xl transition-all active:scale-[0.98] hover:-translate-y-0.5">
                 Daftar
             </x-primary-button>
 
             <div class="text-center text-sm text-gray-500">
                 Sudah punya akun?
-                <a href="{{ route('login') }}" class="font-bold text-[#6B81A7] hover:underline hover:text-[#4A5D7B] transition">Masuk</a>
+                <a href="{{ route('login') }}" class="font-bold text-[#0B6BD3] hover:underline hover:text-[#0950A0] transition">Masuk</a>
             </div>
         </form>
     </div>
