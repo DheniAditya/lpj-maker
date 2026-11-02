@@ -3,7 +3,7 @@
     $hasSignature = $report->hasSignature();
     $missingReceipts = $report->creditNumbersMissingReceipt();
     $canDownload = $hasSignature && ! $missingReceipts;
-    $lockReason = ! $hasSignature ? 'Tambahkan tanda tangan terlebih dahulu' : 'Lampirkan nota untuk semua transaksi Kredit';
+    $lockReason = ! $hasSignature ? 'Tambahkan tanda tangan terlebih dahulu' : 'Nota belum lengkap';
 @endphp
 
 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 mb-6 sm:mb-8 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
@@ -79,7 +79,7 @@
         @if ($missingReceipts)
             <p data-missing-receipts class="text-xs text-amber-600 font-medium inline-flex items-start gap-1 lg:text-right">
                 <x-lpj.icon name="warning" class="w-4 h-4 shrink-0" />
-                <span>Lampirkan nota untuk transaksi Kredit no. {{ implode(', ', $missingReceipts) }} agar bisa mengunduh PDF.</span>
+                <span>Nota belum lengkap. Anda belum bisa mengunduh pdf</span>
             </p>
         @endif
 
