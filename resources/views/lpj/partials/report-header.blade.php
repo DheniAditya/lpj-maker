@@ -1,6 +1,9 @@
 @php
     $canEdit = Gate::allows('update', $report);
     $hasSignature = $report->hasSignature();
+    $missingReceipts = $report->creditNumbersMissingReceipt();
+    $canDownload = $hasSignature && ! $missingReceipts;
+    $lockReason = ! $hasSignature ? 'Tambahkan tanda tangan terlebih dahulu' : 'Lampirkan nota untuk semua transaksi Kredit';
 @endphp
 
 <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 mb-6 sm:mb-8 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
@@ -46,14 +49,14 @@
                 </button>
             @endif
 
-            @if ($hasSignature)
+            @if ($canDownload)
                 <a href="{{ route('lpj.download', $report->slug) }}" target="_blank"
                     class="inline-flex items-center justify-center gap-2 bg-slate-800 text-white px-4 sm:px-5 py-3 rounded-xl font-bold text-sm hover:bg-slate-700 transition shadow-lg {{ $canEdit ? '' : 'col-span-2' }}">
                     <x-lpj.icon name="download" />
                     <span>Download PDF</span>
                 </a>
             @else
-                <button type="button" disabled title="Tambahkan tanda tangan terlebih dahulu"
+                <button type="button" disabled title="{{ $lockReason }}"
                     class="inline-flex items-center justify-center gap-2 bg-slate-200 text-slate-400 px-4 sm:px-5 py-3 rounded-xl font-bold text-sm cursor-not-allowed {{ $canEdit ? '' : 'col-span-2' }}">
                     <x-lpj.icon name="lock" />
                     <span>Download PDF</span>
@@ -70,6 +73,13 @@
             <p class="text-xs text-amber-600 font-medium inline-flex items-center gap-1">
                 <x-lpj.icon name="warning" class="w-4 h-4" />
                 {{ $canEdit ? 'Tambahkan tanda tangan untuk bisa mengunduh PDF.' : 'Menunggu tanda tangan dari pembuat LPJ.' }}
+            </p>
+        @endif
+
+        @if ($missingReceipts)
+            <p data-missing-receipts class="text-xs text-amber-600 font-medium inline-flex items-start gap-1 lg:text-right">
+                <x-lpj.icon name="warning" class="w-4 h-4 shrink-0" />
+                <span>Lampirkan nota untuk transaksi Kredit no. {{ implode(', ', $missingReceipts) }} agar bisa mengunduh PDF.</span>
             </p>
         @endif
 

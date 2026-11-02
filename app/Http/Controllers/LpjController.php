@@ -83,6 +83,11 @@ class LpjController extends Controller
                 ->with('error', 'Tambahkan tanda tangan terlebih dahulu sebelum mengunduh PDF.');
         }
 
+        if ($missing = $report->creditNumbersMissingReceipt()) {
+            return redirect()->route('lpj.show', $report->slug)
+                ->with('error', 'Lampirkan nota untuk transaksi Kredit no. '.implode(', ', $missing).' sebelum mengunduh PDF.');
+        }
+
         $report->load('entries.images');
 
         return Pdf::loadView('lpj.pdf_template', compact('report'))

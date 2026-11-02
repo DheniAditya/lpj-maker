@@ -3,7 +3,7 @@
         ['Masuk atau Daftar', 'Punya akun? Masuk dengan username. Belum punya? Daftar dulu, atau langsung buat LPJ dalam Mode Tamu.', ['Masuk', 'Daftar']],
         ['Buat LPJ Baru', 'Isi Judul Dokumen dan Atas Nama (Penanggung Jawab), lalu tekan Buat.', ['Buat']],
         ['Tambah Transaksi', 'Pilih Debit (Masuk) atau Kredit (Keluar), isi Keterangan dan Nominal, lalu lampirkan Bukti Transaksi lewat Upload atau Kamera.', ['Simpan Transaksi']],
-        ['Tanda Tangan', 'Tekan Tanda Tangan, pilih Tulis atau Gambar, lalu Simpan Tanda Tangan. Download PDF terbuka setelah ditandatangani.', ['Tanda Tangan']],
+        ['Tanda Tangan', 'Tekan Tanda Tangan, pilih Tulis atau Gambar, lalu Simpan Tanda Tangan. Download PDF terbuka setelah ditandatangani dan semua transaksi Kredit memiliki nota.', ['Tanda Tangan']],
         ['Download PDF atau Bagikan', 'Unduh LPJ siap cetak, atau Bagikan link ke rekan sebagai Pelihat maupun Editor.', ['Download PDF', 'Bagikan']],
     ];
 @endphp

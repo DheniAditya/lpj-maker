@@ -52,6 +52,33 @@ class ExpenseReport extends Model
         return $this->hasMany(ExpenseEntry::class)->orderBy('id');
     }
 
+    // ---------- Syarat download PDF ----------
+
+    /**
+     * Nomor urut transaksi Kredit (uang keluar) yang belum punya nota.
+     * Debit (uang masuk) boleh tanpa nota.
+     *
+     * @return array<int, int>
+     */
+    public function creditNumbersMissingReceipt(): array
+    {
+        $entries = $this->relationLoaded('entries') ? $this->entries : $this->entries()->with('images')->get();
+
+        return $entries->values()
+            ->map(fn (ExpenseEntry $entry, int $i) => [
+                'number' => $i + 1,
+                'missing' => ! $entry->isDebit() && $entry->images->isEmpty(),
+            ])
+            ->where('missing', true)
+            ->pluck('number')
+            ->all();
+    }
+
+    public function canDownloadPdf(): bool
+    {
+        return $this->hasSignature() && $this->creditNumbersMissingReceipt() === [];
+    }
+
     // ---------- Tanda tangan ----------
 
     public function hasSignature(): bool
