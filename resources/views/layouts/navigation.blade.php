@@ -1,5 +1,5 @@
 <nav x-data="{ open: false }" 
-class="sticky top-0 z-50 w-full transition-all  shadow-sm
+class="sticky top-0 z-50 w-full transition-all
        backdrop-blur-sm  ">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -3,17 +3,17 @@
         {{-- Navigasi atas (pengganti tombol melayang yang menutupi kamera di HP) --}}
         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             @auth
-                <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-[13px] font-bold text-white/90 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1 min-h-[32px] rounded-full transition">
+                <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-[13px] font-bold text-white hover:text-white bg-[#08254F]/60 hover:bg-[#08254F]/80 backdrop-blur-sm px-3.5 py-1 min-h-[32px] rounded-full transition">
                     <x-lpj.icon name="arrow-left" class="w-4 h-4" /> Dashboard
                 </a>
             @else
-                <a href="{{ route('lpj.create') }}" class="inline-flex items-center gap-2 text-[13px] font-bold text-white/90 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1 min-h-[32px] rounded-full transition">
+                <a href="{{ route('lpj.create') }}" class="inline-flex items-center gap-2 text-[13px] font-bold text-white hover:text-white bg-[#08254F]/60 hover:bg-[#08254F]/80 backdrop-blur-sm px-3.5 py-1 min-h-[32px] rounded-full transition">
                     <x-lpj.icon name="plus" class="w-4 h-4" /> Buat LPJ Baru
                 </a>
             @endauth
 
             @can('share', $report)
-                <x-lpj.share-button :report="$report" class="text-[13px] font-bold text-white/90 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1 min-h-[32px] rounded-full">
+                <x-lpj.share-button :report="$report" class="text-[13px] font-bold text-white hover:text-white bg-[#08254F]/60 hover:bg-[#08254F]/80 backdrop-blur-sm px-3.5 py-1 min-h-[32px] rounded-full">
                     Bagikan
                 </x-lpj.share-button>
             @endcan
