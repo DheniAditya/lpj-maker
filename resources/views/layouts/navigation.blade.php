@@ -1,5 +1,6 @@
 <nav x-data="{ open: false }" 
-class="w-full [text-shadow:0_1px_3px_rgba(0,0,0,.6)]">
+class="sticky top-0 z-50 w-full transition-all
+       backdrop-blur-sm  ">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -9,7 +10,7 @@ class="w-full [text-shadow:0_1px_3px_rgba(0,0,0,.6)]">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
             {{-- Ikon --}}
             <img src="{{ asset('images/icon_only_2.png') }}" alt="Logo" 
-                 class="block h-9 w-auto drop-shadow-[0_1px_3px_rgba(0,0,0,.6)] brightness-200 grayscale sm:grayscale-0 sm:brightness-100 transition" />
+                 class="block h-9 w-auto brightness-200 grayscale sm:grayscale-0 sm:brightness-100 transition" />
             
             {{-- Teks (Berada di kanan ikon karena gap-2 dan flex) --}}
             <span class="md:text-xl text-base font-light text-white tracking-wide">MAKER</span>
@@ -22,7 +23,7 @@ class="w-full [text-shadow:0_1px_3px_rgba(0,0,0,.6)]">
                 <a href="{{ route('cara-pakai') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Cara Pakai</a>
                 <a href="{{ route('bantuan') }}" class="text-sm font-semibold text-white/85 hover:text-white transition">Bantuan</a>
                 @auth
-                    <x-dropdown align="right" width="48" contentClasses="py-1 bg-white [text-shadow:none]">
+                    <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-bold rounded-full text-white bg-white/10 hover:bg-white/20 focus:outline-none transition ease-in-out duration-150">
                                 <div>{{ Auth::user()->name }}</div>
@@ -86,7 +87,7 @@ class="w-full [text-shadow:0_1px_3px_rgba(0,0,0,.6)]">
         </div>
     </div>
 
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-[#0f2a4a] [text-shadow:none] border-t border-white/10">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-[#0f2a4a] border-t border-white/10">
         {{-- ... Isi Mobile Menu Anda ... --}}
         <div class="pt-2 pb-3 space-y-1">
             @auth
