@@ -26,7 +26,7 @@
         </div>
         <div class="min-h-screen">
             
-            <div class="sticky top-0 z-50 bg-white/10 backdrop-blur-xl backdrop-saturate-150 border-b border-white/20 shadow-[0_4px_24px_rgba(0,0,0,.08)]">
+            <div class="sticky top-0 z-50 bg-transparent backdrop-blur-lg border-b border-white/15">
                 @include('layouts.navigation')
             </div>
 
