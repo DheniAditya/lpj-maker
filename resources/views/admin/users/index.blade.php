@@ -1,11 +1,11 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-6 space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-3 text-white">
+            <div class="flex items-center gap-3 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,.45)]">
                 <div class="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center"><x-lpj.icon name="shield" /></div>
                 <div>
                     <h1 class="text-xl font-bold">Panel Admin</h1>
-                    <p class="text-xs text-white/70">Pantau dan kelola pengguna LPJ Maker</p>
+                    <p class="text-xs text-white/90">Pantau dan kelola pengguna LPJ Maker</p>
                 </div>
             </div>
         </div>

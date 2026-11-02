@@ -22,11 +22,11 @@
                     alt="Background Building" 
                  class="w-full h-full object-cover">
             
-            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,37,79,.85)_0%,rgba(8,37,79,.75)_50%,rgba(8,37,79,.65)_100%)]"></div>
+            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,37,79,.5)_0%,rgba(8,37,79,.3)_100%)]"></div>
         </div>
         <div class="min-h-screen">
             
-            <div class="sticky top-0 z-50 bg-[#08254F]/50 backdrop-blur-md border-b border-white/10">
+            <div class="sticky top-0 z-50 bg-[#08254F]/85 backdrop-blur-md border-b border-white/10">
                 @include('layouts.navigation')
             </div>
 
@@ -52,7 +52,7 @@
             
         </div>
         
-        <footer class="py-6 text-center text-xs text-white/70 font-medium relative z-10">
+        <footer class="py-6 text-center text-xs text-white font-medium relative z-10 drop-shadow-[0_1px_2px_rgba(0,0,0,.5)]">
             &copy; {{ date('Y') }} {{ config('app.name') }}. <span class="opacity-70">Professional Reporting System.</span>
         </footer>
     
