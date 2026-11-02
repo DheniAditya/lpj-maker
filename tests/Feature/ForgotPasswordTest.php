@@ -65,13 +65,16 @@ test('admin bisa menandai permintaan selesai; non-admin tidak', function () {
     expect($request->fresh()->resolved_at)->not->toBeNull();
 });
 
-test('halaman lupa password punya tombol chat WhatsApp admin', function () {
-    $this->get('/forgot-password')->assertOk()->assertSee('https://wa.me/6285198215605', false)->assertSee('Chat admin di WhatsApp');
+test('halaman lupa password punya satu tombol chat WhatsApp admin dengan pesan baru', function () {
+    $this->get('/forgot-password')->assertOk()
+        ->assertSee('https://wa.me/6285198215605', false)
+        ->assertSee('Chat admin di WhatsApp')
+        ->assertSee('warahmatullah admin LPJ Maker, maaf saya lupa password.', false)
+        ->assertSee('Mohon dibantu untuk reset password. Terima kasih, have a nice day', false);
 
-    $this->post('/forgot-password', ['username' => 'Zidan'])->assertSessionHas('sent_username', 'zidan');
-
-    $this->followingRedirects()->from('/forgot-password')->post('/forgot-password', ['username' => 'zidan'])
-        ->assertSee('Kabari admin lewat WhatsApp')
-        ->assertSee('wa.me/6285198215605?text=', false)
-        ->assertSee(rawurlencode('Username: zidan'), false);
+    // setelah permintaan terkirim: hanya pesan sukses, tombol WhatsApp atas tidak ada; username terisi untuk tombol bawah
+    $this->followingRedirects()->from('/forgot-password')->post('/forgot-password', ['username' => 'Zidan'])
+        ->assertSee('Permintaan terkirim')
+        ->assertDontSee('Kabari admin lewat WhatsApp')
+        ->assertSee("username: 'zidan'", false);
 });

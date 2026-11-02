@@ -1,6 +1,6 @@
 @php
     $adminWa = config('lpj.admin_whatsapp');
-    $waText = fn (string $username) => "Assalamu'alaikum admin LPJ Maker, saya lupa password.\nUsername: ".($username ?: '-')."\nMohon dibantu reset password. Terima kasih.";
+    $waText = fn (string $username) => "Assalamu'alaikum warahmatullah admin LPJ Maker, maaf saya lupa password.\nUsername: ".($username ?: '-')."\nMohon dibantu untuk reset password. Terima kasih, have a nice day🙏😊";
 @endphp
 
 <x-guest-layout>
@@ -13,16 +13,12 @@
         </div>
 
         @if (session('status'))
-            <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm space-y-3">
-                <p>{{ session('status') }}</p>
-                <a href="https://wa.me/{{ $adminWa }}?text={{ rawurlencode($waText(session('sent_username', ''))) }}" target="_blank" rel="noopener"
-                    class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-white font-bold">
-                    @include('auth.partials.whatsapp-logo') Kabari admin lewat WhatsApp
-                </a>
+            <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm">
+                {{ session('status') }}
             </div>
         @endif
 
-        <form method="POST" action="{{ route('password.request.store') }}" class="space-y-5" x-data="{ username: @js(old('username', '')) }">
+        <form method="POST" action="{{ route('password.request.store') }}" class="space-y-5" x-data="{ username: @js(old('username', session('sent_username', ''))) }">
             @csrf
 
             <div>
