@@ -104,6 +104,8 @@
                         .done(() => {
                             toast('Dihapus!', 500);
                             $($btn.data('row')).fadeOut();
+                            // Muat ulang agar saldo & syarat Download PDF ikut diperbarui
+                            setTimeout(() => location.reload(), 700);
                         })
                         .fail((xhr) => showError(xhr));
                 });

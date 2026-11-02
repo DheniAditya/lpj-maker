@@ -1,7 +1,7 @@
 @php
     $faqs = [
         ['Saya lupa password, bagaimana?', 'Buka halaman Lupa password?, isi username, lalu Kirim permintaan ke admin. Admin akan membuatkan password baru dan memberitahukannya kepadamu. Bisa juga Chat admin di WhatsApp.'],
-        ['Kenapa tombol Download PDF terkunci?', 'PDF baru bisa diunduh setelah LPJ ditandatangani. Tekan Tanda Tangan, pilih Tulis atau Gambar, lalu Simpan Tanda Tangan.'],
+        ['Kenapa tombol Download PDF terkunci?', 'PDF baru bisa diunduh setelah LPJ ditandatangani dan semua transaksi Kredit memiliki nota. Tekan Tanda Tangan, pilih Tulis atau Gambar, lalu Simpan Tanda Tangan. Transaksi Debit boleh tanpa nota.'],
         ['Berapa banyak LPJ yang bisa disimpan?', 'Setiap akun bisa menyimpan sampai 15 arsip laporan. Jika penuh, hapus LPJ lama di Dashboard untuk membuat yang baru.'],
         ['Apa bedanya Pelihat dan Editor saat Bagikan?', 'Pelihat hanya melihat & unduh PDF. Editor bisa tambah/ubah transaksi. Link bisa dibatalkan kapan saja lewat Batalkan link share.'],
         ['Kamera tidak bisa dibuka di HP?', 'Pastikan browser diizinkan memakai kamera. Kamera belakang terbuka lebih dulu; tekan tombol putar untuk ganti ke kamera depan.'],
