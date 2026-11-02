@@ -26,7 +26,10 @@
         </div>
         <div class="min-h-screen">
             
-            <div class="sticky top-0 z-50 bg-transparent backdrop-blur-lg border-b border-white/15">
+            {{-- Navbar kaca bening di atas foto; saat halaman di-scroll berubah jadi kaca putih + teks gelap agar tetap terbaca --}}
+            <div x-data="{ scrolled: window.scrollY > 8 }" @scroll.window.throttle.50ms="scrolled = window.scrollY > 8"
+                 :class="scrolled ? 'is-scrolled bg-white/85 border-slate-200/80 shadow-[0_4px_20px_rgba(15,23,42,.08)]' : 'bg-transparent border-white/15'"
+                 class="group sticky top-0 z-50 backdrop-blur-lg border-b border-white/15 transition-[background-color,border-color,box-shadow] duration-300">
                 @include('layouts.navigation')
             </div>
 
