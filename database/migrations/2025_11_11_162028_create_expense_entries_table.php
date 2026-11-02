@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('expense_entries', function (Blueprint $table) {
             $table->id();
             // Kunci asing untuk relasi ke tabel Induk (LPJ)
-        $table->foreignId('expense_report_id')->constrained()->onDelete('cascade');
-        
-        // "debit" (Uang Masuk/Kas Awal) atau "credit" (Pengeluaran)
-        $table->enum('type', ['debit', 'credit']); 
-        
-        $table->string('description'); // "Bensin ke Solo"
-        $table->decimal('amount', 15, 2); // Nominal
-        $table->string('receipt_image_path')->nullable(); // Path ke foto nota
+            $table->foreignId('expense_report_id')->constrained()->onDelete('cascade');
+
+            // "debit" (Uang Masuk/Kas Awal) atau "credit" (Pengeluaran)
+            $table->enum('type', ['debit', 'credit']);
+
+            $table->string('description'); // "Bensin ke Solo"
+            $table->decimal('amount', 15, 2); // Nominal
+            $table->string('receipt_image_path')->nullable(); // Path ke foto nota
             $table->timestamps();
         });
     }

@@ -12,42 +12,24 @@ test('profile page is displayed', function () {
     $response->assertOk();
 });
 
-test('profile information can be updated', function () {
+test('nama dan username bisa diubah di profil (username jadi huruf kecil)', function () {
     $user = User::factory()->create();
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
-    $response
+    $this->actingAs($user)
+        ->patch('/profile', ['name' => 'Test User', 'username' => 'Deni.Baru'])
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
     $user->refresh();
-
-    $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
-    $this->assertNull($user->email_verified_at);
+    expect($user->name)->toBe('Test User')->and($user->username)->toBe('deni.baru');
 });
 
-test('email verification status is unchanged when the email address is unchanged', function () {
+test('username harus unik dan tanpa spasi', function () {
+    User::factory()->create(['username' => 'dipakai']);
     $user = User::factory()->create();
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => $user->email,
-        ]);
-
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
-
-    $this->assertNotNull($user->refresh()->email_verified_at);
+    $this->actingAs($user)->patch('/profile', ['name' => 'X', 'username' => 'dipakai'])->assertSessionHasErrors('username');
+    $this->actingAs($user)->patch('/profile', ['name' => 'X', 'username' => 'ada spasi'])->assertSessionHasErrors('username');
 });
 
 test('user can delete their account', function () {

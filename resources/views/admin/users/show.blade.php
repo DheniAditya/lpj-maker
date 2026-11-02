@@ -8,6 +8,18 @@
 
         @include('admin.partials.flash')
 
+        @if ($resetRequest)
+            <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex gap-3">
+                <x-lpj.icon name="key" class="w-5 h-5 shrink-0" />
+                <div>
+                    <b>{{ $user->name }} meminta reset password</b> ({{ $resetRequest->updated_at->diffForHumans() }}).
+                    @if ($resetRequest->contact) Hubungi via WA: <b>{{ $resetRequest->contact }}</b>. @endif
+                    @if ($resetRequest->note) <span class="italic">“{{ $resetRequest->note }}”</span> @endif
+                    Buat password baru di bawah, lalu sampaikan ke pengguna.
+                </div>
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div class="space-y-6">
                 {{-- Profil --}}
@@ -20,11 +32,8 @@
                             <input name="name" value="{{ old('name', $user->name) }}" required class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
-                            <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm">
-                            <p class="text-[11px] mt-1 {{ $user->email_verified_at ? 'text-emerald-600' : 'text-amber-600' }}">
-                                {{ $user->email_verified_at ? 'Terverifikasi '.$user->email_verified_at->translatedFormat('d M Y') : 'Email belum diverifikasi' }}
-                            </p>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Username</label>
+                            <input type="text" name="username" value="{{ old('username', $user->username) }}" required autocapitalize="none" spellcheck="false" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm font-mono">
                         </div>
                         <label class="flex items-center gap-2 text-sm text-slate-700">
                             <input type="hidden" name="is_admin" value="0">
@@ -39,7 +48,7 @@
                 </div>
 
                 {{-- Reset password --}}
-                <div class="bg-white rounded-2xl border border-slate-200 p-5">
+                <div id="reset-password" class="bg-white rounded-2xl border {{ $resetRequest ? 'border-rose-300 ring-4 ring-rose-100' : 'border-slate-200' }} p-5 scroll-mt-24">
                     <h2 class="font-bold text-slate-800 mb-1 flex items-center gap-2"><x-lpj.icon name="key" /> Reset password</h2>
                     <p class="text-xs text-slate-500 mb-4">
                         Password disimpan terenkripsi (hash), jadi tidak bisa dilihat siapa pun, termasuk admin.
@@ -52,13 +61,7 @@
                         <label class="flex items-center gap-2 text-xs text-slate-500"><input type="checkbox" x-model="show" class="rounded border-slate-300"> Tampilkan yang saya ketik</label>
                         <button class="w-full py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700">Ganti password</button>
                     </form>
-                    <form method="POST" action="{{ route('admin.users.reset-link', $user) }}" class="mt-2">
-                        @csrf
-                        <button class="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50">
-                            <x-lpj.icon name="envelope" class="w-4 h-4" /> Kirim link reset ke email
-                        </button>
-                        <p class="text-[11px] text-slate-400 mt-1">Butuh pengaturan email (SMTP) di server.</p>
-                    </form>
+
                 </div>
 
                 {{-- Hapus --}}

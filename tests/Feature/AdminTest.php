@@ -2,16 +2,14 @@
 
 use App\Models\ExpenseReport;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     Storage::fake('public');
     $this->admin = User::factory()->create(['is_admin' => true]);
-    $this->member = User::factory()->create(['name' => 'Ust Aqil', 'email' => 'aqil@idn.sch.id']);
+    $this->member = User::factory()->create(['name' => 'Ust Aqil', 'username' => 'aqil']);
 });
 
 test('pengguna biasa dan tamu tidak bisa membuka panel admin', function () {
@@ -19,12 +17,12 @@ test('pengguna biasa dan tamu tidak bisa membuka panel admin', function () {
     $this->actingAs($this->member)->get(route('admin.users.index'))->assertForbidden();
 });
 
-test('admin melihat daftar pengguna, email, dan bisa mencari', function () {
+test('admin melihat daftar pengguna, username, dan bisa mencari', function () {
     $this->actingAs($this->admin)->get(route('admin.users.index'))
-        ->assertOk()->assertSee('Ust Aqil')->assertSee('aqil@idn.sch.id');
+        ->assertOk()->assertSee('Ust Aqil')->assertSee('aqil');
 
     $this->actingAs($this->admin)->get(route('admin.users.index', ['q' => 'tidak-ada']))
-        ->assertOk()->assertDontSee('aqil@idn.sch.id');
+        ->assertOk()->assertDontSee('Ust Aqil');
 });
 
 test('admin bisa membuka LPJ milik pengguna dan mengunduh PDF-nya', function () {
@@ -52,26 +50,18 @@ test('password tidak pernah ditampilkan; admin bisa membuatkan password baru', f
     expect(Hash::check('PasswordBaru123', $this->member->fresh()->password))->toBeTrue();
 });
 
-test('admin bisa mengirim link reset password ke email pengguna', function () {
-    Notification::fake();
-
-    $this->actingAs($this->admin)->post(route('admin.users.reset-link', $this->member))->assertSessionHas('status');
-
-    Notification::assertSentTo($this->member, ResetPassword::class);
-});
-
 test('admin bisa mengubah data dan menjadikan admin', function () {
     $this->actingAs($this->admin)->patch(route('admin.users.update', $this->member), [
-        'name' => 'Aqil Baru', 'email' => 'aqil.baru@idn.sch.id', 'is_admin' => '1',
+        'name' => 'Aqil Baru', 'username' => 'Aqil.Baru', 'is_admin' => '1',
     ])->assertSessionHas('status');
 
     $member = $this->member->fresh();
-    expect($member->name)->toBe('Aqil Baru')->and($member->isAdmin())->toBeTrue()->and($member->email_verified_at)->toBeNull();
+    expect($member->name)->toBe('Aqil Baru')->and($member->username)->toBe('aqil.baru')->and($member->isAdmin())->toBeTrue();
 });
 
 test('admin tidak bisa mencabut admin atau menghapus akun sendiri', function () {
     $this->actingAs($this->admin)->patch(route('admin.users.update', $this->admin), [
-        'name' => $this->admin->name, 'email' => $this->admin->email, 'is_admin' => '0',
+        'name' => $this->admin->name, 'username' => $this->admin->username, 'is_admin' => '0',
     ])->assertSessionHasErrors('is_admin');
 
     $this->actingAs($this->admin)->delete(route('admin.users.destroy', $this->admin))->assertSessionHasErrors('user');
@@ -92,11 +82,11 @@ test('admin menghapus pengguna beserta LPJ dan file notanya', function () {
 });
 
 test('perintah lpj:admin menjadikan dan mencabut admin', function () {
-    $this->artisan('lpj:admin', ['email' => 'aqil@idn.sch.id'])->assertSuccessful();
+    $this->artisan('lpj:admin', ['username' => 'Aqil'])->assertSuccessful();
     expect($this->member->fresh()->isAdmin())->toBeTrue();
 
-    $this->artisan('lpj:admin', ['email' => 'aqil@idn.sch.id', '--remove' => true])->assertSuccessful();
+    $this->artisan('lpj:admin', ['username' => 'aqil', '--remove' => true])->assertSuccessful();
     expect($this->member->fresh()->isAdmin())->toBeFalse();
 
-    $this->artisan('lpj:admin', ['email' => 'tidak@ada.id'])->assertFailed();
+    $this->artisan('lpj:admin', ['username' => 'tidak-ada'])->assertFailed();
 });

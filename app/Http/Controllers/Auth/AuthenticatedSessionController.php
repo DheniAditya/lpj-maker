@@ -36,7 +36,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        // logoutCurrentDevice(): keluar dari perangkat ini saja. logout() biasa mengganti
+        // remember token, sehingga "Ingat saya" di HP/laptop lain ikut hilang.
+        Auth::guard('web')->logoutCurrentDevice();
 
         $request->session()->invalidate();
 

@@ -19,7 +19,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-   public function down(): void
+    public function down(): void
     {
         Schema::table('expense_reports', function (Blueprint $table) {
             // (Ini kebalikannya, jika kita mau rollback)

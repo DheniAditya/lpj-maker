@@ -42,7 +42,7 @@ Route::prefix('lpj')->name('lpj.')->group(function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware('auth')
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -57,7 +57,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
     Route::patch('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
     Route::put('/users/{user}/password', [AdminUserController::class, 'resetPassword'])->name('users.password');
-    Route::post('/users/{user}/reset-link', [AdminUserController::class, 'sendResetLink'])->name('users.reset-link');
+    Route::post('/reset-requests/{resetRequest}/resolve', [AdminUserController::class, 'resolveResetRequest'])->name('reset-requests.resolve');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 });
 

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('expense_reports', function (Blueprint $table) {
             $table->foreignId('user_id')
-              ->after('id')
-              ->constrained() // Menghubungkan ke tabel 'users'
-              ->onDelete('cascade'); // Jika user dihapus, LPJ-nya ikut terhapus
+                ->after('id')
+                ->constrained() // Menghubungkan ke tabel 'users'
+                ->onDelete('cascade'); // Jika user dihapus, LPJ-nya ikut terhapus
         });
     }
 

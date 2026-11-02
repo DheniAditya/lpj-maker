@@ -42,12 +42,12 @@
                 <a href="{{ url('/dashboard') }}" class="text-sm font-semibold text-white/90 hover:text-white transition">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="px-6 py-2.5 md:text-sm text-xs  bg-transparent text-white/90 rounded-full hover:bg-white hover:text-blue-400 transition shadow-lg">
-                    Log in
+                    Masuk
                 </a>
 
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}" class="px-6 py-2.5 md:text-sm text-xs  bg-transparent text-white/90 rounded-full hover:bg-white hover:text-blue-400 transition shadow-lg">
-                        Sign Up
+                        Daftar
                     </a>
                 @endif
             @endauth
