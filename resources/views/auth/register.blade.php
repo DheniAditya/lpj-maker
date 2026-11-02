@@ -1,55 +1,65 @@
+@php
+    // Gaya kolom isian sama dengan halaman Masuk
+    $input = 'w-full py-3.5 px-5 bg-gray-50 rounded-2xl border-gray-200 text-gray-700 placeholder-gray-400 shadow-sm transition-all focus:ring-1 focus:ring-[#6B81A7] focus:border-[#6B81A7] focus:bg-white focus:outline-none';
+    $label = 'block text-gray-600 text-sm font-bold mb-2 ml-1 tracking-wide';
+@endphp
+
 <x-guest-layout>
-    <x-auth-session-status class="mb-4 mx-4" :status="session('status')" />
+    <div class="bg-white w-full max-w-lg mx-auto p-8 sm:p-10 rounded-[2.5rem] shadow-2xl relative">
 
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
-
-        <!-- Name -->
-        <div class="mx-4 rounded-2xl">
-            <x-input-label for="name" value="Nama" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        <div class="mb-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Buat akun baru</h2>
+            <p class="text-sm text-gray-500 mt-2">Simpan riwayat LPJ kamu dan akses dari perangkat mana saja.</p>
         </div>
 
-        <!-- Username -->
-        <div class="mt-4 mx-4">
-            <x-input-label for="username" value="Username" />
-            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')" required autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="contoh: deni.aditya" />
-            <p class="mt-1 text-xs text-gray-500">Huruf kecil, angka, titik, garis bawah, atau strip. Tanpa spasi.</p>
-            <x-input-error :messages="$errors->get('username')" class="mt-2" />
-        </div>
+        <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <!-- Password -->
-        <div class="mt-4 mx-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <form method="POST" action="{{ route('register') }}" class="space-y-5" x-data="{ show: false }">
+            @csrf
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+            <div>
+                <x-input-label for="name" value="Nama lengkap" :class="$label" />
+                <x-text-input id="name" type="text" name="name" :value="old('name')" required autofocus autocomplete="name"
+                    placeholder="Contoh: Deni Aditya" :class="$input" />
+                <x-input-error :messages="$errors->get('name')" class="mt-2 text-xs ml-1" />
+            </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            <div>
+                <x-input-label for="username" value="Username" :class="$label" />
+                <x-text-input id="username" type="text" name="username" :value="old('username')" required autocomplete="username"
+                    autocapitalize="none" spellcheck="false" placeholder="Contoh: deni.aditya" :class="$input" />
+                <p class="mt-1.5 ml-1 text-xs text-gray-400">Dipakai untuk masuk. Huruf kecil, angka, titik, garis bawah, atau strip. Tanpa spasi.</p>
+                <x-input-error :messages="$errors->get('username')" class="mt-2 text-xs ml-1" />
+            </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4 mx-4">
-            <x-input-label for="password_confirmation" value="Ulangi Password" />
+            <div>
+                <x-input-label for="password" value="Password" :class="$label" />
+                <div class="relative">
+                    <x-text-input id="password" x-bind:type="show ? 'text' : 'password'" type="password" name="password" required autocomplete="new-password"
+                        placeholder="Minimal 8 karakter" :class="$input.' pr-12'" />
+                    <button type="button" @click="show = !show" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#6B81A7]"
+                        :title="show ? 'Sembunyikan password' : 'Tampilkan password'">
+                        <x-lpj.icon name="eye" class="w-5 h-5" />
+                    </button>
+                </div>
+                <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs ml-1" />
+            </div>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+            <div>
+                <x-input-label for="password_confirmation" value="Ulangi password" :class="$label" />
+                <x-text-input id="password_confirmation" x-bind:type="show ? 'text' : 'password'" type="password" name="password_confirmation" required
+                    autocomplete="new-password" placeholder="Ketik ulang password" :class="$input" />
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-xs ml-1" />
+            </div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                Sudah punya akun?
-            </a>
-
-            <x-primary-button class="ms-4 mx-4">
+            <x-primary-button class="w-full justify-center py-4 text-lg font-bold rounded-2xl bg-[#4A5D7B] hover:bg-[#36445a] shadow-lg hover:shadow-xl transition-all active:scale-[0.98] hover:-translate-y-0.5">
                 Daftar
             </x-primary-button>
-        </div>
-    </form>
+
+            <div class="text-center text-sm text-gray-500">
+                Sudah punya akun?
+                <a href="{{ route('login') }}" class="font-bold text-[#6B81A7] hover:underline hover:text-[#4A5D7B] transition">Masuk</a>
+            </div>
+        </form>
+    </div>
 </x-guest-layout>

@@ -27,3 +27,10 @@ test('pendaftaran ditolak jika username sudah dipakai', function () {
 
     $this->assertGuest();
 });
+
+test('halaman daftar memakai username dan pesan error berbahasa Indonesia', function () {
+    $this->get('/register')->assertOk()->assertSee('Buat akun baru')->assertSee('name="username"', false);
+
+    $this->post('/register', ['name' => 'Deni', 'username' => 'deni', 'password' => 'abc', 'password_confirmation' => 'abd'])
+        ->assertSessionHasErrors(['password' => 'Ulangi password tidak sama.']);
+});

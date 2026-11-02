@@ -37,6 +37,12 @@ class RegisteredUserController extends Controller
         ], [
             'username.regex' => 'Username hanya boleh berisi huruf kecil, angka, titik, garis bawah, atau strip (tanpa spasi).',
             'username.unique' => 'Username ini sudah dipakai. Coba yang lain.',
+            'username.min' => 'Username minimal 3 karakter.',
+            'name.required' => 'Nama wajib diisi.',
+            'username.required' => 'Username wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+            'password.confirmed' => 'Ulangi password tidak sama.',
+            'password.min' => 'Password minimal 8 karakter.',
         ]);
 
         $user = User::create([
