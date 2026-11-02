@@ -85,7 +85,7 @@ class LpjController extends Controller
 
         if ($report->creditNumbersMissingReceipt()) {
             return redirect()->route('lpj.show', $report->slug)
-                ->with('error', 'Nota belum lengkap. Anda belum bisa mengunduh pdf');
+                ->with('error', 'Nota belum lengkap. Download PDF terkunci.');
         }
 
         $report->load('entries.images');
