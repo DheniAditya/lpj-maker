@@ -48,21 +48,6 @@
                     Generate PDF financial reports instantly. Deliver on your promises—fast, responsive, and responsible.
                 </p>
 
-                <ul class="mt-6 hidden sm:flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-white/90">
-                    <li class="flex items-center gap-2.5">
-                        <span class="w-[38px] h-[38px] rounded-xl bg-white/15 flex items-center justify-center"><x-lpj.icon name="camera" class="w-5 h-5" /></span>
-                        Kamera
-                    </li>
-                    <li class="flex items-center gap-2.5">
-                        <span class="w-[38px] h-[38px] rounded-xl bg-white/15 flex items-center justify-center"><x-lpj.icon name="signature" class="w-5 h-5" /></span>
-                        Tanda Tangan
-                    </li>
-                    <li class="flex items-center gap-2.5">
-                        <span class="w-[38px] h-[38px] rounded-xl bg-white/15 flex items-center justify-center"><x-lpj.icon name="download" class="w-5 h-5" /></span>
-                        Download PDF
-                    </li>
-                </ul>
-
                 @guest
                     <div class="mt-8 hidden sm:flex">
                         <a href="{{ route('register') }}" class="inline-flex items-center min-h-[44px] px-7 py-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-white font-bold transition">
