@@ -27,8 +27,7 @@
             {{-- INPUT PASSWORD --}}
             <div>
                 <x-input-label for="password" :value="__('Password')" class="block text-gray-600 text-sm font-bold mb-2 ml-1 tracking-wide" />
-                <x-text-input id="password" 
-                              type="password" 
+                <x-password-input id="password"
                               name="password" 
                               required autocomplete="current-password" 
                               placeholder="Masukkan password"

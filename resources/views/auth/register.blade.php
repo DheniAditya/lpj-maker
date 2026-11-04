@@ -14,7 +14,7 @@
 
         <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <form method="POST" action="{{ route('register') }}" class="space-y-5" x-data="{ show: false }">
+        <form method="POST" action="{{ route('register') }}" class="space-y-5">
             @csrf
 
             <div>
@@ -34,20 +34,14 @@
 
             <div>
                 <x-input-label for="password" value="Password" :class="$label" />
-                <div class="relative">
-                    <x-text-input id="password" x-bind:type="show ? 'text' : 'password'" type="password" name="password" required autocomplete="new-password"
-                        placeholder="Minimal 8 karakter" :class="$input.' pr-12'" />
-                    <button type="button" @click="show = !show" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#6B81A7]"
-                        :title="show ? 'Sembunyikan password' : 'Tampilkan password'">
-                        <x-lpj.icon name="eye" class="w-5 h-5" />
-                    </button>
-                </div>
+                <x-password-input id="password" name="password" required autocomplete="new-password"
+                    placeholder="Minimal 8 karakter" :class="$input" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs ml-1" />
             </div>
 
             <div>
                 <x-input-label for="password_confirmation" value="Ulangi password" :class="$label" />
-                <x-text-input id="password_confirmation" x-bind:type="show ? 'text' : 'password'" type="password" name="password_confirmation" required
+                <x-password-input id="password_confirmation" name="password_confirmation" required
                     autocomplete="new-password" placeholder="Ketik ulang password" :class="$input" />
                 <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-xs ml-1" />
             </div>
