@@ -3,7 +3,7 @@
 use App\Models\ExpenseReport;
 use App\Models\User;
 
-test('akun biasa maksimal 15 arsip LPJ', function () {
+test('akun biasa maksimal 5 arsip LPJ', function () {
     $user = User::factory()->create();
     foreach (range(1, User::MAX_REPORTS) as $i) {
         ExpenseReport::create(['title' => "LPJ $i", 'creator_name' => 'Deni', 'user_id' => $user->id]);
@@ -11,7 +11,7 @@ test('akun biasa maksimal 15 arsip LPJ', function () {
 
     $this->actingAs($user)
         ->from(route('dashboard'))
-        ->post(route('lpj.store'), ['title' => 'LPJ 16', 'creator_name' => 'Deni'])
+        ->post(route('lpj.store'), ['title' => 'LPJ baru', 'creator_name' => 'Deni'])
         ->assertRedirect(route('dashboard'))
         ->assertSessionHasErrors('title');
 
@@ -26,7 +26,7 @@ test('admin tidak dibatasi jumlah arsip', function () {
         ExpenseReport::create(['title' => "LPJ $i", 'creator_name' => 'Admin', 'user_id' => $admin->id]);
     }
 
-    $this->actingAs($admin)->post(route('lpj.store'), ['title' => 'LPJ 16', 'creator_name' => 'Admin']);
+    $this->actingAs($admin)->post(route('lpj.store'), ['title' => 'LPJ baru', 'creator_name' => 'Admin']);
 
     expect($admin->expenseReports()->count())->toBe(User::MAX_REPORTS + 1);
 });

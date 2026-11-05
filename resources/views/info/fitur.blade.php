@@ -5,7 +5,7 @@
         ['signature', 'bg-violet-100 text-violet-700', 'Tanda Tangan', 'Tulis langsung di layar atau pilih Gambar. Latar putih otomatis dibuat transparan.'],
         ['download', 'bg-green-100 text-green-700', 'Download PDF', 'LPJ siap cetak: tabel bernomor, total mutasi, saldo akhir, tanda tangan, dan lampiran nota.'],
         ['share', 'bg-blue-100 text-blue-700', 'Bagikan', 'Bagikan link sebagai Pelihat atau Editor, kirim lewat WhatsApp, dan batalkan link share kapan saja.'],
-        ['document', 'bg-slate-100 text-slate-700', 'Arsip Laporan', 'Masuk untuk menyimpan sampai 15 LPJ. Tanpa akun tetap bisa membuat LPJ lewat Mode Tamu.'],
+        ['document', 'bg-slate-100 text-slate-700', 'Arsip Laporan', 'Masuk untuk menyimpan sampai '.\App\Models\User::MAX_REPORTS.' LPJ. Tanpa akun tetap bisa membuat LPJ lewat Mode Tamu.'],
     ];
 @endphp
 <x-info-layout title="Fitur" kicker="Fitur" heading="Semua yang dibutuhkan<br class='hidden sm:block'> untuk LPJ yang rapi"
