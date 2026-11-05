@@ -29,7 +29,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     /** Batas jumlah arsip LPJ per akun (admin tidak dibatasi). */
-    public const MAX_REPORTS = 15;
+    public const MAX_REPORTS = 5;
 
     protected $hidden = [
         'password',
