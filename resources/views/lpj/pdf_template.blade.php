@@ -16,10 +16,6 @@
     /** Format akuntansi: minus dalam kurung. */
     $acc = fn ($v, $rp = false) => (float) $v < 0 ? '('.($rp ? 'Rp' : '').$num($v).')' : ($rp ? 'Rp' : '').$num($v);
 
-    $pdf = config('lpj.pdf');
-    $logoPath = $pdf['logo'] ? public_path($pdf['logo']) : null;
-    $logo = $logoPath && is_file($logoPath) ? 'data:image/png;base64,'.base64_encode(file_get_contents($logoPath)) : null;
-    $sub = collect([$pdf['org'] ?? null, $pdf['address'] ?? null])->filter()->implode(' · ');
 
     $saldo = 0;
     $rows = $report->entries->values()->map(function ($entry, $i) use (&$saldo) {
@@ -50,12 +46,8 @@
         .center { text-align: center; }
 
         /* ---------- Kop ---------- */
-        .head { width: 100%; }
-        .head td { vertical-align: top; padding: 0; }
         .kicker { font-size: 7.5pt; letter-spacing: 2.6pt; color: #666; }
         .title { font-size: 17pt; font-weight: bold; margin-top: 2mm; line-height: 1.2; }
-        .sub { font-size: 9pt; color: #666; margin-top: 1.5mm; }
-        .logo { max-height: 14mm; max-width: 28mm; }
         .rule-thick { border-top: 0.5mm solid #111; margin: 4mm 0 5mm; }
 
         .meta { width: 100%; margin-bottom: 4mm; }
@@ -115,20 +107,8 @@
 </head>
 <body>
     {{-- Kop --}}
-    <table class="head">
-        <tr>
-            <td>
-                <div class="kicker">LAPORAN PERTANGGUNGJAWABAN</div>
-                <div class="title">{{ $report->title }}</div>
-            </td>
-            @if ($logo)
-                <td style="width: 30mm;" class="right"><img src="{{ $logo }}" class="logo"></td>
-            @endif
-        </tr>
-    </table>
-    @if ($sub)
-        <div class="sub">{{ $sub }}</div>
-    @endif
+    <div class="kicker">LAPORAN PERTANGGUNGJAWABAN</div>
+    <div class="title">{{ $report->title }}</div>
     <div class="rule-thick"></div>
 
     <table class="meta">
