@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
-        <title>{{ config('app.name', 'LPJ Maker') }}</title>
+        <title>LPJ Maker</title>
         @include('partials.head-icons')
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,7 +58,7 @@
         </div>
         
         <footer class="py-6 text-center text-xs text-white font-medium relative z-10 drop-shadow-[0_1px_2px_rgba(0,0,0,.5)]">
-            &copy; {{ date('Y') }} {{ config('app.name') }}. <span class="opacity-70">Professional Reporting System.</span>
+            &copy; {{ date('Y') }} LPJ Maker. <span class="opacity-70">Professional Reporting System.</span>
         </footer>
     
         {{-- jQuery & SweetAlert dipakai oleh script halaman (AJAX tanpa reload) --}}

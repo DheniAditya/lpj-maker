@@ -333,3 +333,14 @@ test('Terbilang mengubah angka ke kata', function () {
         ->and(\App\Support\Terbilang::make(0))->toBe('Nol')
         ->and(\App\Support\Terbilang::rupiah(-4000))->toBe('Minus Empat Ribu Rupiah');
 });
+
+test('judul tab dan footer memakai nama LPJ Maker, bukan APP_NAME', function () {
+    config(['app.name' => 'LpjMaker | Make a finance report as fast as closing eyes']);
+    $report = makeReport();
+
+    $html = $this->withSession(asGuestCreator($report))->get(route('lpj.show', $report->slug))->assertOk()->getContent();
+
+    expect($html)->toContain('<title>LPJ Maker</title>')
+        ->toContain('LPJ Maker. <span')
+        ->not->toContain('closing eyes');
+});
