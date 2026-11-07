@@ -343,13 +343,13 @@ test('input nota menampilkan petunjuk tempel gambar (Ctrl+V)', function () {
         ->toContain('Bisa juga tempel gambar nota');
 });
 
-test('judul tab dan footer memakai nama LPJ Maker, bukan APP_NAME', function () {
+test('judul tab dan footer memakai ejaan LPJ Maker, bukan APP_NAME', function () {
     config(['app.name' => 'LpjMaker | Make a finance report as fast as closing eyes']);
     $report = makeReport();
 
     $html = $this->withSession(asGuestCreator($report))->get(route('lpj.show', $report->slug))->assertOk()->getContent();
 
-    expect($html)->toContain('<title>LPJ Maker</title>')
-        ->toContain('LPJ Maker. <span')
-        ->not->toContain('closing eyes');
+    expect($html)->toContain('<title>LPJ Maker | Make a finance report as fast as closing eyes</title>')
+        ->toContain('LPJ Maker | Make a finance report as fast as closing eyes. <span')
+        ->not->toContain('LpjMaker');
 });
