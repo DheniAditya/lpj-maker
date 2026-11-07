@@ -305,8 +305,9 @@ test('PDF: saldo berjalan, minus dalam kurung, dan terbilang', function () {
     $html = view('lpj.pdf_template', compact('report'))->render();
 
     expect($html)->toContain('<td class="num">799.000</td>')
-        ->toContain('<td class="num">(4.000)</td>')       // saldo berjalan baris 2
-        ->toContain('(Rp4.000)')                           // saldo akhir
+        ->toContain('<td class="num">-4.000</td>')        // saldo berjalan baris 2
+        ->toContain('<td class="val">-Rp4.000</td>')        // saldo akhir pakai tanda minus
+        ->not->toContain('(4.000)')
         ->toContain('Minus Empat Ribu Rupiah')
         ->toContain('LAPORAN PERTANGGUNGJAWABAN')
         ->toContain('Hormat Kami,');

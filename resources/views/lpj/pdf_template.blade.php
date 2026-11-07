@@ -4,7 +4,7 @@
      | - Monokrom: hitam (#111) untuk isi, abu-abu (#666) untuk label, garis tipis (#ccc).
      | - IBM Plex Sans untuk teks, IBM Plex Mono untuk angka (lisensi OFL, file di public/fonts;
      |   didaftarkan di App\Support\LpjPdf sebelum render).
-     | - Saldo berjalan per baris; angka minus ditulis dalam kurung, contoh (4.000).
+     | - Saldo berjalan per baris; angka minus ditulis dengan tanda minus, contoh -4.000.
      | - Lampiran: 4 bukti per halaman (2×2), nomor sama dengan nomor transaksi.
      */
     use App\Support\Terbilang;
@@ -13,8 +13,8 @@
     $printedAt = now()->day.' '.$months[now()->month].' '.now()->year;
 
     $num = fn ($v) => number_format(abs((float) $v), 0, ',', '.');
-    /** Format akuntansi: minus dalam kurung. */
-    $acc = fn ($v, $rp = false) => (float) $v < 0 ? '('.($rp ? 'Rp' : '').$num($v).')' : ($rp ? 'Rp' : '').$num($v);
+    /** Angka bertanda: minus ditulis dengan tanda minus, contoh -450.000 / -Rp450.000. */
+    $signed = fn ($v, $rp = false) => ((float) $v < 0 ? '-' : '').($rp ? 'Rp' : '').$num($v);
 
 
     $saldo = 0;
@@ -143,7 +143,7 @@
                     <td>{{ $count ? 'Terlampir'.($count > 1 ? " ({$count})" : '') : ($entry->isDebit() ? '-' : 'Tidak terlampir') }}</td>
                     <td class="num">{{ $entry->isDebit() ? $num($entry->amount) : '-' }}</td>
                     <td class="num">{{ $entry->isDebit() ? '-' : $num($entry->amount) }}</td>
-                    <td class="num">{{ $acc($rowSaldo) }}</td>
+                    <td class="num">{{ $signed($rowSaldo) }}</td>
                 </tr>
             @empty
                 <tr class="last"><td colspan="6" class="center gray">Belum ada transaksi.</td></tr>
@@ -155,7 +155,7 @@
     <table class="summary">
         <tr><td class="gray">Total Debit (dana masuk)</td><td class="val">Rp{{ $num($report->total_debit) }}</td></tr>
         <tr class="sep"><td class="gray">Total Kredit (pengeluaran)</td><td class="val">Rp{{ $num($report->total_credit) }}</td></tr>
-        <tr class="total"><td>Saldo Akhir</td><td class="val">{{ $acc($report->balance, true) }}</td></tr>
+        <tr class="total"><td>Saldo Akhir</td><td class="val">{{ $signed($report->balance, true) }}</td></tr>
     </table>
 
     <div class="terbilang"><b>Terbilang:</b> <i>{{ Terbilang::rupiah($report->balance) }}</i></div>
