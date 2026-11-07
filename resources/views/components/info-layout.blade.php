@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title }} — {{ config('app.name', 'LPJ Maker') }}</title>
+    <title>{{ $title }} — LPJ Maker</title>
 
     @include('partials.head-icons')
 
