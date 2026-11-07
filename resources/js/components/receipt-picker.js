@@ -1,6 +1,8 @@
 /**
- * Komponen Alpine untuk memilih foto nota: upload file atau ambil dari kamera.
+ * Komponen Alpine untuk memilih foto nota: upload file, ambil dari kamera, atau tempel (Ctrl+V).
  * Dipakai oleh form "Tambah Transaksi" dan modal "Edit Transaksi".
+ *
+ * Tempel: hanya picker yang terlihat dan paling atas (modal edit bila terbuka) yang menerima gambar.
  *
  * Opsi:
  *  - syncInput: true  -> file disalin ke <input type="file" x-ref="fileInput"> (form submit biasa/FormData).
@@ -10,10 +12,20 @@ export default function receiptPicker({ syncInput = true } = {}) {
     return {
         images: [], // { id: number|null, file: File|null, preview: string }
         deletedIds: [],
+        pasted: false, // sebentar true setelah gambar ditempel (umpan balik di UI)
         showCamera: false,
         stream: null,
         facingMode: 'environment', // default kamera belakang (memotret nota); 'user' = kamera depan
         isMirrored: false,
+
+        init() {
+            this.onPaste = (event) => this.handlePaste(event);
+            window.addEventListener('paste', this.onPaste);
+        },
+
+        destroy() {
+            window.removeEventListener('paste', this.onPaste);
+        },
 
         /** Isi dengan nota yang sudah tersimpan (mode edit). */
         loadExisting(images = []) {
@@ -34,6 +46,52 @@ export default function receiptPicker({ syncInput = true } = {}) {
                 };
                 reader.readAsDataURL(file);
             });
+        },
+
+        // ---------- Tempel (Ctrl+V) ----------
+
+        /** Picker aktif = yang terlihat dan paling akhir di halaman (modal edit ada setelah form tambah). */
+        isActivePicker() {
+            const visible = [...document.querySelectorAll('[data-receipt-picker]')].filter((el) => el.getClientRects().length > 0);
+            return visible[visible.length - 1] === this.$el;
+        },
+
+        async handlePaste(event) {
+            const files = [...(event.clipboardData?.items || [])]
+                .filter((item) => item.kind === 'file' && item.type.startsWith('image/'))
+                .map((item) => item.getAsFile())
+                .filter(Boolean);
+
+            if (!files.length || this.showCamera || !this.isActivePicker()) return;
+            event.preventDefault();
+
+            const stamp = Date.now();
+            const ready = await Promise.all(files.map((file, i) => this.normalizePasted(file, `nota_tempel_${stamp}_${i + 1}`)));
+            this.addImages(ready);
+            this.pasted = true;
+            clearTimeout(this.pastedTimer);
+            this.pastedTimer = setTimeout(() => (this.pasted = false), 1800);
+        },
+
+        /**
+         * Server hanya menerima JPG/PNG maksimal 5 MB. PNG/JPG kecil dipakai apa adanya;
+         * format lain (webp, gif, dll.) atau file besar diubah ke JPEG.
+         */
+        async normalizePasted(file, name) {
+            const ok = ['image/png', 'image/jpeg'].includes(file.type) && file.size <= 4.5 * 1024 * 1024;
+            if (ok) return new File([file], `${name}.${file.type === 'image/png' ? 'png' : 'jpg'}`, { type: file.type });
+
+            const bitmap = await createImageBitmap(file);
+            const scale = Math.min(1, 2400 / Math.max(bitmap.width, bitmap.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(bitmap.width * scale);
+            canvas.height = Math.round(bitmap.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+            const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+            return new File([blob], `${name}.jpg`, { type: 'image/jpeg' });
         },
 
         removeImage(index) {

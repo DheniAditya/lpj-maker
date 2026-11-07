@@ -333,3 +333,12 @@ test('Terbilang mengubah angka ke kata', function () {
         ->and(\App\Support\Terbilang::make(0))->toBe('Nol')
         ->and(\App\Support\Terbilang::rupiah(-4000))->toBe('Minus Empat Ribu Rupiah');
 });
+
+test('input nota menampilkan petunjuk tempel gambar (Ctrl+V)', function () {
+    $report = makeReport();
+
+    $html = $this->withSession(asGuestCreator($report))->get(route('lpj.show', $report->slug))->assertOk()->getContent();
+
+    expect($html)->toContain('data-receipt-picker')
+        ->toContain('Bisa juga tempel gambar nota');
+});
