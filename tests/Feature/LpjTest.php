@@ -349,7 +349,7 @@ test('judul tab dan footer memakai ejaan LPJ Maker, bukan APP_NAME', function ()
 
     $html = $this->withSession(asGuestCreator($report))->get(route('lpj.show', $report->slug))->assertOk()->getContent();
 
-    expect($html)->toContain('<title>LPJ Maker | Make a finance report as fast as closing eyes</title>')
+    expect($html)->toContain('<title>LPJ Maker — Make a finance report as fast as closing eyes</title>')
         ->toContain('LPJ Maker | Make a finance report as fast as closing eyes. <span')
         ->not->toContain('LpjMaker');
 });

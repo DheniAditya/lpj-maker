@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
-        <title>LPJ Maker | Make a finance report as fast as closing eyes</title>
+        <title>LPJ Maker — Make a finance report as fast as closing eyes</title>
         @include('partials.head-icons')
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
