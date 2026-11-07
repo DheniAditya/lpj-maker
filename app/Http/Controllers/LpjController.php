@@ -6,7 +6,7 @@ use App\Http\Requests\Lpj\StoreReportRequest;
 use App\Models\ExpenseReport;
 use App\Models\User;
 use App\Policies\ExpenseReportPolicy;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Support\LpjPdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -90,13 +90,7 @@ class LpjController extends Controller
 
         $report->load('entries.images');
 
-        return Pdf::loadView('lpj.pdf_template', compact('report'))
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-                'chroot' => public_path(),
-            ])
-            ->download("LPJ - {$report->title}.pdf");
+        return LpjPdf::make($report)->download("LPJ - {$report->title}.pdf");
     }
 
     public function destroy(ExpenseReport $report): JsonResponse

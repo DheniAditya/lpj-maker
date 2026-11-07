@@ -277,9 +277,9 @@ test('tabel & PDF memakai nomor urut sesuai urutan input, tanpa tanggal', functi
     expect($pdfHtml)->toContain('>No</th>')->not->toContain('20/10/2026')
         ->and(preg_match_all('/<td class="no">(\d+)<\/td>/', $pdfHtml, $m))->toBe(2)
         ->and($m[1])->toBe(['1', '2'])
-        ->and($pdfHtml)->toContain('<td class="nota-no">2</td><td class="nota-desc">Belanja</td>')
-        ->and($pdfHtml)->toContain('Tidak terlampir')
-        ->and($pdfHtml)->toContain('>Terlampir<')
+        ->and($pdfHtml)->toContain('<td class="nota-no">02</td><td class="nota-desc">Belanja</td>')
+        ->and($pdfHtml)->toContain('<td>-</td>') // debit tanpa bukti
+        ->and($pdfHtml)->toContain('<td>Terlampir</td>')
         ->and($pdfHtml)->not->toContain('Jumlah transaksi')
         ->and($pdfHtml)->not->toContain('Nomor lampiran sesuai');
 });
@@ -296,15 +296,40 @@ test('tanggal tidak bisa diubah lewat edit transaksi', function () {
     expect($entry->fresh()->created_at->toDateTimeString())->toBe($original);
 });
 
-test('PDF: saldo minus ditandai merah dengan format -Rp, kredit berwarna merah', function () {
+test('PDF: saldo berjalan, minus dalam kurung, dan terbilang', function () {
     $report = makeReport();
-    $report->entries()->create(['type' => 'credit', 'description' => 'Bensin', 'amount' => 600000]);
+    $report->entries()->create(['type' => 'debit', 'description' => 'Anggaran', 'amount' => 799000]);
+    $report->entries()->create(['type' => 'credit', 'description' => 'Kelas', 'amount' => 803000]);
     $report->load('entries.images');
 
     $html = view('lpj.pdf_template', compact('report'))->render();
 
-    expect($html)->toContain('balance negative')
-        ->toContain('-Rp 600.000')
-        ->toContain('Pengeluaran melebihi dana masuk')
-        ->toContain('<td class="num out">600.000</td>');
+    expect($html)->toContain('<td class="num">799.000</td>')
+        ->toContain('<td class="num">(4.000)</td>')       // saldo berjalan baris 2
+        ->toContain('(Rp4.000)')                           // saldo akhir
+        ->toContain('Minus Empat Ribu Rupiah')
+        ->toContain('LAPORAN PERTANGGUNGJAWABAN')
+        ->toContain('Hormat Kami,');
+});
+
+test('PDF: lampiran memberi tanda + untuk debit dan - untuk kredit', function () {
+    $report = makeReport();
+    $entry = $report->entries()->create(['type' => 'credit', 'description' => 'Bensin', 'amount' => 50000]);
+    $entry->attachImages([UploadedFile::fake()->image('a.jpg'), UploadedFile::fake()->image('b.jpg')]);
+    $report->load('entries.images');
+
+    $html = view('lpj.pdf_template', compact('report'))->render();
+
+    expect($html)->toContain('LAMPIRAN BUKTI TRANSAKSI')
+        ->toContain('Bensin (1/2)')
+        ->toContain('Bensin (2/2)')
+        ->toContain('<div class="card-foot">-50.000</div>')
+        ->not->toContain('Kredit ·');
+});
+
+test('Terbilang mengubah angka ke kata', function () {
+    expect(\App\Support\Terbilang::make(7735000))->toBe('Tujuh Juta Tujuh Ratus Tiga Puluh Lima Ribu')
+        ->and(\App\Support\Terbilang::make(1100))->toBe('Seribu Seratus')
+        ->and(\App\Support\Terbilang::make(0))->toBe('Nol')
+        ->and(\App\Support\Terbilang::rupiah(-4000))->toBe('Minus Empat Ribu Rupiah');
 });
