@@ -155,7 +155,7 @@
     <table class="summary">
         <tr><td class="gray">Total Debit (dana masuk)</td><td class="val">Rp{{ $num($report->total_debit) }}</td></tr>
         <tr class="sep"><td class="gray">Total Kredit (pengeluaran)</td><td class="val">Rp{{ $num($report->total_credit) }}</td></tr>
-        <tr class="total"><td>Saldo Akhir</td><td class="val">{{ $acc($report->balance, true) }}</td></tr>
+        <tr class="total"><td>Saldo Akhir</td><td class="val">{{ ($report->balance < 0 ? '-' : '').'Rp'.$num($report->balance) }}</td></tr>
     </table>
 
     <div class="terbilang"><b>Terbilang:</b> <i>{{ Terbilang::rupiah($report->balance) }}</i></div>
