@@ -1,5 +1,5 @@
 {{--
-    Input "Bukti Transaksi": tombol Upload & Kamera, pratinjau foto, dan layar kamera.
+    Input "Bukti Transaksi": tombol Upload & Kamera, tempel gambar (Ctrl+V), pratinjau foto, dan layar kamera.
 
     Props:
       - compact : tombol lebih pendek (untuk modal edit)
@@ -8,7 +8,7 @@
 --}}
 @props(['compact' => false, 'sync' => true])
 
-<div x-data="receiptPicker({ syncInput: {{ $sync ? 'true' : 'false' }} })" {{ $attributes }}>
+<div x-data="receiptPicker({ syncInput: {{ $sync ? 'true' : 'false' }} })" data-receipt-picker {{ $attributes }}>
     <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Bukti Transaksi</label>
 
     <input type="file" name="images[]" multiple accept="image/*" class="hidden" x-ref="fileInput"
@@ -23,6 +23,12 @@
             </button>
         @endforeach
     </div>
+
+    <p class="hidden md:block -mt-2 mb-4 text-[11px] text-slate-400 ml-1" aria-live="polite">
+        <span x-show="!pasted">Bisa juga tempel gambar nota: salin gambarnya, lalu tekan
+            <kbd class="px-1.5 py-0.5 rounded border border-slate-300 bg-slate-50 font-mono text-[10px] text-slate-500">Ctrl</kbd>+<kbd class="px-1.5 py-0.5 rounded border border-slate-300 bg-slate-50 font-mono text-[10px] text-slate-500">V</kbd></span>
+        <span x-show="pasted" x-cloak class="text-emerald-600 font-semibold">Gambar nota ditempel ✓</span>
+    </p>
 
     <div class="grid grid-cols-3 gap-2" x-show="images.length > 0">
         <template x-for="(img, index) in images" :key="index">
