@@ -44,7 +44,7 @@
                 <div>
                     <label for="creator_name">Atas Nama (Penanggung Jawab)</label>
                     <input type="text" name="creator_name" id="creator_name" 
-                           placeholder="Contoh: Ahmad Fulan, S.Kom" 
+                           placeholder="Contoh: Fulan" 
                            required>
                 </div>
 
